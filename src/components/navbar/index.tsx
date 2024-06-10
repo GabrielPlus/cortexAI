@@ -1,6 +1,6 @@
 import Image from 'next/image'
 import * as React from 'react'
-import { Button } from '../ui/button'
+// import { Button } from '../ui/button'
 import Link from 'next/link'
 
 function NavBar() {
