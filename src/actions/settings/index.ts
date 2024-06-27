@@ -1,3 +1,4 @@
+'use server'
 import { client } from "@/lib/prisma"
 import { currentUser } from "@clerk/nextjs"
 
@@ -36,7 +37,7 @@ export const onIntegrateDomain = async (domain: string, icon: string) => {
       if (!domainExists) {
         if (
           (subscription?.subscription?.plan == 'STANDARD' &&
-            subscription._count.domains < 1) ||
+            subscription._count.domains < 3) ||
           (subscription?.subscription?.plan == 'PRO' &&
             subscription._count.domains < 5) ||
           (subscription?.subscription?.plan == 'ULTIMATE' &&

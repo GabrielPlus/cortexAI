@@ -30,8 +30,8 @@ const DomainMenu = ({ domains, min }: Props) => {
       <div className="flex justify-between w-full items-center">
         {!min && <p className="text-xs text-gray-500">DOMAINS</p>}
         <AppDrawer
-          description="add in your domain address to integrate your chatbot"
-          title="Add your business domain"
+          description="Add your institution's domain address to integrate your chatbot."
+          title="Add your Institution domain"
           onOpen={
             <div className="cursor-pointer text-gray-500 rounded-full border-2">
               <Plus />
@@ -74,7 +74,7 @@ const DomainMenu = ({ domains, min }: Props) => {
               href={`/settings/${domain.name.split('.')[0]}`}
               key={domain.id}
               className={cn(
-                'flex gap-3 hover:bg-white rounded-full transition duration-100 ease-in-out cursor-pointer ',
+                'flex gap-3 items-center justify-center hover:bg-white rounded-full transition duration-100 ease-in-out cursor-pointer ',
                 !min ? 'p-2' : 'py-2',
                 domain.name.split('.')[0] == isDomain && 'bg-white'
               )}
