@@ -1,8 +1,8 @@
 export const pricingCards = [
     {
       title: 'Standard',
-      description: 'Perfect for trying out Corinna AI',
-      price: '$0',
+      description: 'Perfect for trying out Cortex AI',
+      price: '$5',
       duration: '',
       highlight: 'Key features',
       features: [' 1 domain ', '10 contacts', '10 Emails per month'],
@@ -11,20 +11,20 @@ export const pricingCards = [
     {
       title: 'Ultimate',
       description: 'The ultimate agency kit',
-      price: '$30',
-      duration: 'month',
+      price: '$300',
+      duration: 'Lifetime',
       highlight: 'Key features',
       features: [' Unlimited domain ', '500 Contacts', '500 Emails'],
   
       priceId: 'price_1OYxkqFj9oKEERu1KfJGWxgN',
     },
-    {
-      title: 'Plus',
-      description: 'For serious agency owners',
-      price: '$10',
-      duration: 'month',
-      highlight: 'Everything in Starter, plus',
-      features: [' 2 domain ', '50 contacts', '50 Emails per month'],
-      priceId: 'price_1OYxkqFj9oKEERu1NbKUxXxN',
-    },
+    // {
+    //   title: 'Plus',
+    //   description: 'For serious agency owners',
+    //   price: '$10',
+    //   duration: 'month',
+    //   highlight: 'Everything in Starter, plus',
+    //   features: [' 2 domain ', '50 contacts', '50 Emails per month'],
+    //   priceId: 'price_1OYxkqFj9oKEERu1NbKUxXxN',
+    // },
   ]
