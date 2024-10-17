@@ -44,8 +44,8 @@ const BreadCrumb = (props: Props) => {
           : page == 'email-marketing'
           ? 'Send bulk emails to your students and staff'
           : page == 'integration'
-          ? 'Connect your school website or institution app into Cortex-AI'
-          : 'Modify domain settings, change chatbot options, enter academic queries, and train your bot to assist with educational needs and inquiries.'}
+          ? 'Connect your Taxonomy Livelihoods system into Cortex-AI'
+          : 'odify domain settings, customize chatbot options, input classification queries, and train your bot to assist with job classifications, skills mapping, and career recommendations'}
       </p>
     </div>
   )
