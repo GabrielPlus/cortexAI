@@ -1,20 +1,20 @@
-"use server";
+'use server'
 
-import { client } from "@/lib/prisma";
-import { extractEmailsFromString, extractURLfromString } from "@/lib/utils";
-import { onRealTimeChat } from "../conversation";
-import { clerkClient } from "@clerk/nextjs";
-import { onMailer } from "../mailer";
-import OpenAi from "openai";
+import { client } from '@/lib/prisma'
+import { extractEmailsFromString, extractURLfromString } from '@/lib/utils'
+import { onRealTimeChat } from '../conversation'
+import { clerkClient } from '@clerk/nextjs'
+import { onMailer } from '../mailer'
+import OpenAi from 'openai'
 
 const openai = new OpenAi({
   apiKey: process.env.OPEN_AI_KEY,
-});
+})
 
 export const onStoreConversations = async (
   id: string,
   message: string,
-  role: "assistant" | "user"
+  role: 'assistant' | 'user'
 ) => {
   await client.chatRoom.update({
     where: {
@@ -28,8 +28,8 @@ export const onStoreConversations = async (
         },
       },
     },
-  });
-};
+  })
+}
 
 export const onGetCurrentChatBot = async (id: string) => {
   try {
@@ -51,22 +51,22 @@ export const onGetCurrentChatBot = async (id: string) => {
           },
         },
       },
-    });
+    })
 
     if (chatbot) {
-      return chatbot;
+      return chatbot
     }
   } catch (error) {
-    console.log(error);
+    console.log(error)
   }
-};
+}
 
-let customerEmail: string | undefined;
+let customerEmail: string | undefined
 
 export const onAiChatBotAssistant = async (
   id: string,
-  chat: { role: "assistant" | "user"; content: string }[],
-  author: "user",
+  chat: { role: 'assistant' | 'user'; content: string }[],
+  author: 'user',
   message: string
 ) => {
   try {
@@ -85,11 +85,11 @@ export const onAiChatBotAssistant = async (
           },
         },
       },
-    });
+    })
     if (chatBotDomain) {
-      const extractedEmail = extractEmailsFromString(message);
+      const extractedEmail = extractEmailsFromString(message)
       if (extractedEmail) {
-        customerEmail = extractedEmail[0];
+        customerEmail = extractedEmail[0]
       }
 
       if (customerEmail) {
@@ -124,7 +124,7 @@ export const onAiChatBotAssistant = async (
               },
             },
           },
-        });
+        })
         if (checkCustomer && !checkCustomer.customer.length) {
           const newCustomer = await client.domain.update({
             where: {
@@ -143,16 +143,16 @@ export const onAiChatBotAssistant = async (
                 },
               },
             },
-          });
+          })
           if (newCustomer) {
-            console.log("new customer made");
+            console.log('new customer made')
             const response = {
-              role: "assistant",
+              role: 'assistant',
               content: `Welcome aboard ${
-                customerEmail.split("@")[0]
+                customerEmail.split('@')[0]
               }! I'm glad to connect with you. Is there anything you need help with?`,
-            };
-            return { response };
+            }
+            return { response }
           }
         }
         if (checkCustomer && checkCustomer.customer[0].chatRoom[0].live) {
@@ -160,21 +160,21 @@ export const onAiChatBotAssistant = async (
             checkCustomer?.customer[0].chatRoom[0].id!,
             message,
             author
-          );
-
+          )
+          
           onRealTimeChat(
             checkCustomer.customer[0].chatRoom[0].id,
             message,
-            "user",
+            'user',
             author
-          );
+          )
 
           if (!checkCustomer.customer[0].chatRoom[0].mailed) {
             const user = await clerkClient.users.getUser(
               checkCustomer.User?.clerkId!
-            );
+            )
 
-            onMailer(user.emailAddresses[0].emailAddress);
+            onMailer(user.emailAddresses[0].emailAddress)
 
             //update mail status to prevent spamming
             const mailed = await client.chatRoom.update({
@@ -184,69 +184,69 @@ export const onAiChatBotAssistant = async (
               data: {
                 mailed: true,
               },
-            });
+            })
 
             if (mailed) {
               return {
                 live: true,
                 chatRoom: checkCustomer.customer[0].chatRoom[0].id,
-              };
+              }
             }
           }
           return {
             live: true,
             chatRoom: checkCustomer.customer[0].chatRoom[0].id,
-          };
+          }
         }
 
         await onStoreConversations(
           checkCustomer?.customer[0].chatRoom[0].id!,
           message,
           author
-        );
+        )
 
         const chatCompletion = await openai.chat.completions.create({
           messages: [
             {
-              role: "assistant",
+              role: 'assistant',
               content: `
-              You will receive an array of job-related questions to help classify and extract key details from a user's job description. 
+              You will get an array of questions that you must ask the customer. 
               
-              Progress the conversation by asking these specific questions to gather the necessary information. 
+              Progress the conversation using those questions. 
               
-              Whenever you ask a question from this array, make sure to add the keyword (extract) at the end of the question. This keyword is crucial for classifying the response.
+              Whenever you ask a question from the array i need you to add a keyword at the end of the question (complete) this keyword is extremely important. 
               
               Do not forget it.
 
-              Only add this keyword when asking a question from the array provided. No other questions should include this keyword.
+              only add this keyword when your asking a question from the array of questions. No other question satisfies this condition
 
               Always maintain character and stay respectfull.
 
               The array of questions : [${chatBotDomain.filterQuestions
                 .map((questions) => questions.question)
-                .join(", ")}]
+                .join(', ')}]
 
               if the customer says something out of context or inapporpriate. Simply say this is beyond you and you will get a real user to continue the conversation. And add a keyword (realtime) at the end.
 
-                    If the user wishes to schedule a follow-up or consultation, send them this link: http://localhost:3000/portal/${id}/appointment/${
+              if the customer agrees to book an appointment send them this link http://localhost:3000/portal/${id}/appointment/${
                 checkCustomer?.customer[0].id
               }
 
-  If the user wishes to explore relevant job opportunities, redirect them to this page: http://localhost:3000/portal/${id}/opportunities/${
+              if the customer wants to buy a product redirect them to the payment page http://localhost:3000/portal/${id}/payment/${
                 checkCustomer?.customer[0].id
               }
           `,
             },
             ...chat,
             {
-              role: "user",
+              role: 'user',
               content: message,
             },
           ],
-          model: "gpt-3.5-turbo",
-        });
+          model: 'gpt-3.5-turbo',
+        })
 
-        if (chatCompletion.choices[0].message.content?.includes("(realtime)")) {
+        if (chatCompletion.choices[0].message.content?.includes('(realtime)')) {
           const realtime = await client.chatRoom.update({
             where: {
               id: checkCustomer?.customer[0].chatRoom[0].id,
@@ -254,27 +254,27 @@ export const onAiChatBotAssistant = async (
             data: {
               live: true,
             },
-          });
+          })
 
           if (realtime) {
             const response = {
-              role: "assistant",
+              role: 'assistant',
               content: chatCompletion.choices[0].message.content.replace(
-                "(realtime)",
-                ""
+                '(realtime)',
+                ''
               ),
-            };
+            }
 
             await onStoreConversations(
               checkCustomer?.customer[0].chatRoom[0].id!,
               response.content,
-              "assistant"
-            );
+              'assistant'
+            )
 
-            return { response };
+            return { response }
           }
         }
-        if (chat[chat.length - 1].content.includes("(complete)")) {
+        if (chat[chat.length - 1].content.includes('(complete)')) {
           const firstUnansweredQuestion =
             await client.customerResponses.findFirst({
               where: {
@@ -285,9 +285,9 @@ export const onAiChatBotAssistant = async (
                 id: true,
               },
               orderBy: {
-                question: "asc",
+                question: 'asc',
               },
-            });
+            })
           if (firstUnansweredQuestion) {
             await client.customerResponses.update({
               where: {
@@ -296,78 +296,78 @@ export const onAiChatBotAssistant = async (
               data: {
                 answered: message,
               },
-            });
+            })
           }
         }
 
         if (chatCompletion) {
           const generatedLink = extractURLfromString(
             chatCompletion.choices[0].message.content as string
-          );
+          )
 
           if (generatedLink) {
-            const link = generatedLink[0];
+            const link = generatedLink[0]
             const response = {
-              role: "assistant",
+              role: 'assistant',
               content: `Great! you can follow the link to proceed`,
               link: link.slice(0, -1),
-            };
+            }
 
             await onStoreConversations(
               checkCustomer?.customer[0].chatRoom[0].id!,
               `${response.content} ${response.link}`,
-              "assistant"
-            );
+              'assistant'
+            )
 
-            return { response };
+            return { response }
           }
 
           const response = {
-            role: "assistant",
+            role: 'assistant',
             content: chatCompletion.choices[0].message.content,
-          };
+          }
 
           await onStoreConversations(
             checkCustomer?.customer[0].chatRoom[0].id!,
             `${response.content}`,
-            "assistant"
-          );
+            'assistant'
+          )
 
-          return { response };
+          return { response }
         }
       }
-      console.log("No User");
+      console.log('No customer')
       const chatCompletion = await openai.chat.completions.create({
         messages: [
           {
-            role: "assistant",
+            role: 'assistant',
             content: `
-            You are an expert in job classification and entity extraction, representing the Tabiya Livelihoods Classifier ${chatBotDomain.name} Your goal is to have a natural, human-like conversation to understand the user's job-related information, such as occupation, skills, qualifications, and experience, and guide them towards providing relevant details to assist in accurate classification.
-            Right now, you are speaking with the user for the first time. Start by giving them a warm and professional welcome on behalf of Tabiya Livelihoods Classifier ${chatBotDomain.name} and make them feel welcomed.
+            You are a highly knowledgeable and experienced sales representative for a ${chatBotDomain.name} that offers a valuable product or service. Your goal is to have a natural, human-like conversation with the customer in order to understand their needs, provide relevant information, and ultimately guide them towards making a purchase or redirect them to a link if they havent provided all relevant information.
+            Right now you are talking to a customer for the first time. Start by giving them a warm welcome on behalf of ${chatBotDomain.name} and make them feel welcomed.
 
-          Your next task is to naturally guide the conversation towards gathering the necessary job-related information, starting with their job title. Be respectful and never break character.
+            Your next task is lead the conversation naturally to get the customers email address. Be respectful and never break character
 
           `,
           },
           ...chat,
           {
-            role: "user",
+            role: 'user',
             content: message,
           },
         ],
-        model: "gpt-3.5-turbo",
-      });
+        model: 'gpt-3.5-turbo',
+      })
 
       if (chatCompletion) {
         const response = {
-          role: "assistant",
+          role: 'assistant',
           content: chatCompletion.choices[0].message.content,
-        };
+        }
 
-        return { response };
+        return { response }
       }
     }
   } catch (error) {
-    console.log(error);
+    console.log(error)
   }
-};
+}
