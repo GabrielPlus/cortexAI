@@ -40,7 +40,7 @@ const BreadCrumb = (props: Props) => {
           : page == 'dashboard'
           ? 'A detailed overview of your metrics, usage, students, and more'
           : page == 'appointment'
-          ? 'View and edit all your academic appointments'
+          ? 'View and edit all your  appointments'
           : page == 'email-marketing'
           ? 'Send bulk emails to your students and staff'
           : page == 'integration'
