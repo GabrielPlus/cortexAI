@@ -45,7 +45,7 @@ const BreadCrumb = (props: Props) => {
           ? 'Send bulk emails to your students and staff'
           : page == 'integration'
           ? 'Connect your Taxonomy Livelihoods system into Cortex-AI'
-          : 'odify domain settings, customize chatbot options, input classification queries, and train your bot to assist with job classifications, skills mapping, and career recommendations'}
+          : 'modify domain settings, customize chatbot options, input classification queries, and train your bot to assist with job classifications, skills mapping, and career recommendations'}
       </p>
     </div>
   )
