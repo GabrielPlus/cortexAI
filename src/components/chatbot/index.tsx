@@ -61,24 +61,24 @@ const AiChatBot = (props: Props) => {
         </div>
       )}
 
-      {!botOpened && !loading && (
-        <div className="relative flex items-center cursor-pointer" onClick={onOpenChatBot}>
-
-          <div className="w-20 h-20 flex items-center justify-center shadow-md">
-            {currentBot?.chatBot?.icon ? (
-              <Image
-                src={`https://ucarecdn.com/${currentBot.chatBot.icon}/`}
-                alt="bot"
-                width={80}
-                height={80}
-              />
-            ) : (
-
-              <BotIcon />
-            )}
-          </div>
-        </div>
+{!botOpened && !loading && (
+  <div className="relative flex items-center cursor-pointer" onClick={onOpenChatBot}>
+    <div className="w-15 h-15 flex items-center justify-center rounded-full bg-white border-2 border-gray-400">
+      {currentBot?.chatBot?.icon ? (
+        <Image
+          src={`https://ucarecdn.com/${currentBot.chatBot.icon}/`}
+          alt="bot"
+          width={50}
+          height={50}
+          className="rounded-full"
+        />
+      ) : (
+        <BotIcon />
       )}
+    </div>
+  </div>
+)}
+
 
     </div>
   )
