@@ -31,7 +31,7 @@ const AiChatBot = (props: Props) => {
   }
 
   return (
-    <div className="h-screen flex flex-col justify-end items-end gap-4">
+    <div className="h-screen flex flex-col justify-end items-end gap-9">
       {/* Chat Window */}
       {botOpened && (
         <div className="relative">
@@ -63,7 +63,7 @@ const AiChatBot = (props: Props) => {
 
 {!botOpened && !loading && (
   <div className="relative flex items-center cursor-pointer" onClick={onOpenChatBot}>
-    <div className="w-15 h-15 flex items-center justify-center rounded-full bg-white border-2 border-gray-400">
+    
       {currentBot?.chatBot?.icon ? (
         <Image
           src={`https://ucarecdn.com/${currentBot.chatBot.icon}/`}
@@ -75,7 +75,7 @@ const AiChatBot = (props: Props) => {
       ) : (
         <BotIcon />
       )}
-    </div>
+    
   </div>
 )}
 

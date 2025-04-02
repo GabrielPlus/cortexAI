@@ -71,9 +71,9 @@ const BotWindow = forwardRef<HTMLDivElement, Props>(
   ) => {
     return (
       <div className={cn(
-        "h-[680px] w-[380px] flex flex-col bg-white rounded-xl border-[1px] overflow-hidden",
+        "h-[680px] w-[330px] md:w-[380px] flex flex-col bg-white rounded-xl  overflow-hidden",
         className
-      )}>
+      )}> {/*border border-purple-200 */}
         <div className="flex justify-between px-4 pt-4">
           <div className="flex gap-2">
             <Avatar className="w-20 h-20">
@@ -84,10 +84,10 @@ const BotWindow = forwardRef<HTMLDivElement, Props>(
               <AvatarFallback>TK</AvatarFallback>
             </Avatar>
             <div className="flex items-start flex-col">
-              <h3 className="text-lg font-bold leading-none">
-                TechKidz <span>X</span>pert
+              <h3 className="text-lg mt-4 font-bold leading-none">
+                TechKidz Africa
               </h3>
-              <p className="text-sm">{domainName.split('.com')[0]}</p>
+              {/* <p className="text-sm">{domainName.split('.com')[0]}</p> */}
               {realtimeMode?.mode && (
                 <RealTimeMode
                   setChats={setChat}
@@ -121,36 +121,40 @@ const BotWindow = forwardRef<HTMLDivElement, Props>(
                 ))}
                 {onResponding && <Responding />}
               </div>
-              
-              <form onSubmit={onChat} className="flex px-3 py-2 flex-col flex-1">
+
+              <form onSubmit={onChat} className="flex px-3 py-3 flex-col flex-1">
                 <div className="relative w-full mt-20">
+                  {/* Paperclip icon (now inside input) */}
+                  <Label
+                    htmlFor="upload"
+                    className="absolute left-3 top-1/2 transform -translate-y-1/2 cursor-pointer p-1 rounded-full hover:bg-gray-100"
+                  >
+                    <BsPaperclip className="w-5 h-5 text-gray-900" />
+                  </Label>
+
+                  {/* Input with adjusted padding for the icon */}
                   <Input
                     {...register("content")}
-                    className="w-full px-4 py-2 pr-12 text-sm border border-gray-200 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    className="w-full pl-10 pr-12 py-2 text-sm  rounded-full"
                     type="text"
                     placeholder="Write a message"
                   />
+
+                  {/* Hidden file input */}
+                  <Input
+                    {...register('image')}
+                    type="file"
+                    id="upload"
+                    className="hidden"
+                  />
+
+                  {/* Send button (unchanged) */}
                   <Button
                     type="submit"
                     className="absolute right-2 top-1/2 transform -translate-y-1/2 px-3 py-1 bg-transparent border-none shadow-none hover:bg-transparent focus:ring-0"
                   >
                     <IoSendSharp className="text-gray-800 w-6 h-6" />
                   </Button>
-                </div>
-
-                <div className="mt-3">
-                  <Label
-                    htmlFor="upload"
-                    className="inline-flex items-center gap-2 p-2 rounded-full transition duration-300 hover:bg-blue-100 cursor-pointer"
-                  >
-                    <BsPaperclip className="w-5 h-5 text-gray-900" />
-                    <Input
-                      {...register('image')}
-                      type="file"
-                      id="upload"
-                      className="hidden"
-                    />
-                  </Label>
                 </div>
               </form>
             </div>
