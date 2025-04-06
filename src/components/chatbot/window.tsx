@@ -71,7 +71,7 @@ const BotWindow = forwardRef<HTMLDivElement, Props>(
   ) => {
     return (
       <div className={cn(
-        "h-[680px] w-[330px] md:w-[380px] flex flex-col bg-white rounded-xl  overflow-hidden",
+        "h-[600px] w-[330px] md:w-[380px] flex flex-col bg-white rounded-xl border border-purple-200  overflow-hidden",
         className
       )}> {/*border border-purple-200 */}
         <div className="flex justify-between px-4 pt-4">
@@ -110,7 +110,7 @@ const BotWindow = forwardRef<HTMLDivElement, Props>(
                   background: theme || '',
                   color: textColor || '',
                 }}
-                className="px-3 flex h-[330px] flex-col py-5 gap-3 chat-window overflow-y-auto"
+                className="px-3 flex h-[360px] flex-col py-5 gap-3 chat-window overflow-y-auto"
                 ref={ref}
               >
                 {chats.map((chat, key) => (
@@ -122,8 +122,8 @@ const BotWindow = forwardRef<HTMLDivElement, Props>(
                 {onResponding && <Responding />}
               </div>
 
-              <form onSubmit={onChat} className="flex px-3 py-3 flex-col flex-1">
-                <div className="relative w-full mt-20">
+              <form onSubmit={onChat} className="flex px-3 py-1 flex-col flex-1">
+                <div className="relative w-full mt-4">
                   {/* Paperclip icon (now inside input) */}
                   <Label
                     htmlFor="upload"

@@ -1,7 +1,7 @@
 'use client'
 import { useChatBot } from '@/hooks/chatbot/use-chatbot'
 import React from 'react'
-import { ChevronDown } from 'lucide-react';
+import { X } from 'lucide-react';
 import { cn } from '@/lib/utils'
 import Image from 'next/image'
 import { BotIcon } from '@/icons/bot-icon'
@@ -55,7 +55,7 @@ const AiChatBot = (props: Props) => {
             className="absolute top-2 right-2 p-2 rounded-full hover:bg-blue-200 transition duration-200"
             onClick={closeChatBot}
           >
-            <ChevronDown size={28} className="font-bold text-gray-900" />
+            <X size={28} className="font-bold text-gray-900" />
           </button>
 
         </div>
