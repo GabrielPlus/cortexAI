@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic'
+
 import { onGetCurrentDomainInfo } from '@/actions/settings'
 import BotTrainingForm from '@/components/forms/settings/bot-training'
 import SettingsForm from '@/components/forms/settings/form'
