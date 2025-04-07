@@ -187,3 +187,40 @@ const BotWindow = forwardRef<HTMLDivElement, Props>(
 
 BotWindow.displayName = 'BotWindow';
 export default BotWindow;
+
+
+// <!DOCTYPE html>
+// <html lang="en">
+// <head>
+//     <meta charset="UTF-8">
+//     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+//     <title>Document</title>
+//     <style>
+//         .chat-frame {
+//             position: fixed;
+//             bottom: 15px;
+//             right: 15px;
+//             border: none;
+//         }
+//     </style>
+//     <script>
+//         document.addEventListener("DOMContentLoaded", () => {
+//             const iframe = document.createElement("iframe");
+//             iframe.src = "http://192.168.0.106:3000/chatbot";
+//             iframe.classList.add("chat-frame");
+//             document.body.appendChild(iframe);
+
+//             window.addEventListener("message", (e) => {
+//                 if (e.origin !== "http://192.168.0.106:3000") return;
+//                 let dimensions = JSON.parse(e.data);
+//                 iframe.width = dimensions.width;
+//                 iframe.height = dimensions.height;
+//                 iframe.contentWindow.postMessage("66b43aee-f0db-4246-be29-288f43c00ed1", "http://192.168.0.106:3000/");
+//             });
+//         });
+//     </script>
+// </head>
+// <body>
+
+// </body>
+// </html>
