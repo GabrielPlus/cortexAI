@@ -29,25 +29,53 @@ export const onDomainCustomerResponses = async (customerId: string) => {
   }
 }
 
-export const onGetAllDomainBookings = async (domainId: string) => {
+export type DomainBooking = {
+  slot: string
+  date: Date
+}
+export const onGetAllDomainBookings = async (domainId: string): Promise<{ date: Date; slot: string }[] | undefined> => {
   try {
     const bookings = await client.bookings.findMany({
-      where: {
-        domainId,
-      },
+      where: { domainId },
       select: {
         slot: true,
         date: true,
       },
     })
 
-    if (bookings) {
-      return bookings
-    }
+    if (!bookings) return undefined
+
+    // Convert dates to proper Date objects
+    return bookings.map(booking => ({
+      slot: booking.slot,
+      date: new Date(booking.date)
+    }))
+    
   } catch (error) {
-    console.log(error)
+    console.error("Failed to fetch domain bookings:", error)
+    return undefined
   }
 }
+
+// export const onGetAllDomainBookings = async (domainId: string) => {
+//   try {
+//     const bookings = await client.bookings.findMany({
+//       where: {
+//         domainId,
+//       },
+//       select: {
+//         slot: true,
+//         date: true,
+//       },
+//     })
+
+//     if (bookings) {
+//       return bookings
+//     }
+//   } catch (error) {
+//     console.log(error)
+//   }
+// }
 
 export const onBookNewAppointment = async (
   domainId: string,
