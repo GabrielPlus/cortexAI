@@ -1,3 +1,6 @@
+export const dynamic = 'force-dynamic'
+
+
 import { onLoginUser } from '@/actions/auth'
 import SideBar from '@/components/sidebar'
 import { ChatProvider } from '@/context/user-chat-context'
