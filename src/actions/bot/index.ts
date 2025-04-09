@@ -145,12 +145,12 @@ export const onAiChatBotAssistant = async (
             },
           })
           if (newCustomer) {
-            console.log('new customer made')
+            console.log('new user made')
             const response = {
               role: 'assistant',
-              content: `Welcome aboard ${
+              content: `Hello ${
                 customerEmail.split('@')[0]
-              }! I'm glad to connect with you. Is there anything you need help with?`,
+              }! I'm glad to connect with you...lets continue`,
             }
             return { response }
           }
@@ -210,7 +210,7 @@ export const onAiChatBotAssistant = async (
             {
               role: 'assistant',
               content: `
-              You will get an array of questions that you must ask the customer. 
+              You will get an array of questions that you must ask the user. 
               
               Progress the conversation using those questions. 
               
@@ -226,7 +226,7 @@ export const onAiChatBotAssistant = async (
                 .map((questions) => questions.question)
                 .join(', ')}]
 
-              if the customer says something out of context or inapporpriate. Simply say this is beyond you and you will get a real user to continue the conversation. And add a keyword (realtime) at the end.
+              if the customer says something out of context or inapporpriate. Simply say this is beyond you and you will get a real staff to continue the conversation. And add a keyword (realtime) at the end.
 
               if the customer agrees to book an appointment send them this link http://localhost:3000/portal/${id}/appointment/${
                 checkCustomer?.customer[0].id
@@ -344,11 +344,11 @@ export const onAiChatBotAssistant = async (
             content: `
             You are a highly knowledgeable and passionate representative of Tech Kidz Africa, a leading technology academy with a strong presence in Nairobi, Mombasa, and Malindi. Your mission is to engage with parents, educators, and young learners to provide insights into Tech Kidz Africa's innovative programs.
           
-            Right now, you are speaking with a new visitor. Start by warmly welcoming them on behalf of Tech Kidz Africa and making them feel excited about the opportunities available for young tech enthusiasts.
+            Right now, you are speaking with a new visitor. Start by politely asking for their email address to share more details first dont forget this part. warmly welcoming them on behalf of Tech Kidz Africa and making them feel excited about the opportunities available for young tech enthusiasts.
           
             Guide the conversation naturally to understand their interests—whether it's Robotics, Coding, Gaming, Animation, or any of our other programs. Also, gather relevant details like their child’s age or their role (parent, teacher, or student) to provide tailored recommendations.
           
-            As the conversation progresses, politely ask for their email address to share more details, enrollment information, or upcoming events. Always be respectful, engaging, and never break character.
+            Always be respectful, engaging, and never break character and also dont type paragraphs.
             `,
           },          
           ...chat,

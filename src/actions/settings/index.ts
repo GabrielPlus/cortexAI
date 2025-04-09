@@ -54,7 +54,7 @@ export const onIntegrateDomain = async (domain: string, icon: string) => {
                 icon,
                 chatBot: {
                   create: {
-                    welcomeMessage: 'Hey their Please note, this chat may be AI-generated or real-time, and errors are possible. By using it, you agree that TechKidz Africa may record this chat. Your personal data will be handled as per our policy',
+                    welcomeMessage: 'Hey their, this chat may be AI-generated or real-time. By using it, you agree that TechKidz Africa may record this chat. Your personal data will be handled as per our policy',
                   },
                 },
               },

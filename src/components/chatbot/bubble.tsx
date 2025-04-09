@@ -27,9 +27,12 @@ const Bubble = ({ message, createdAt }: Props) => {
       )}
     >
       {message.role == 'assistant' ? (
-        <Avatar className="w-5 h-5">
+        <Avatar className="w-10 h-10">
 
-          <AvatarFallback>T</AvatarFallback>
+              <AvatarFallback>
+                {/* Optional: You can keep a fallback in case the image fails to load */}
+                <img src="/images/gif.gif" alt="Fallback" className="w-full h-full object-cover" />
+              </AvatarFallback>
         </Avatar>
       ) : (
         <Avatar className="w-5 h-5">
@@ -43,7 +46,7 @@ const Bubble = ({ message, createdAt }: Props) => {
           'flex flex-col gap-3 min-w-[200px] max-w-[300px] p-4 rounded-t-md',
           message.role == 'assistant'
             ? 'bg-muted rounded-r-md'
-            : 'bg-grandis rounded-l-md'
+            : 'bg-purple rounded-l-md'
         )}
       >
         {createdAt ? (

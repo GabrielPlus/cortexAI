@@ -71,7 +71,7 @@ const BotWindow = forwardRef<HTMLDivElement, Props>(
   ) => {
     return (
       <div className={cn(
-        "h-[600px] w-[330px] md:w-[380px] flex flex-col bg-white rounded-xl border border-purple-200  overflow-hidden",
+        "h-[600px] w-[330px] md:w-[380px] flex flex-col bg-white rounded-xl border border-black  overflow-hidden",
         className
       )}> {/*border border-purple-200 */}
         <div className="flex justify-between px-4 pt-4">
