@@ -3,7 +3,9 @@ import React, { forwardRef } from 'react';
 import { UseFormRegister } from 'react-hook-form';
 import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar';
 import RealTimeMode from './real-time';
+import Image from 'next/image';
 import TabsMenu from '../tabs';
+import ChatIcon from '@/icons/chat-icon';
 import { BOT_TABS_MENU } from '@/constants/menu';
 import { TabsContent } from '../ui/tabs';
 import { Separator } from '../ui/separator';
@@ -11,12 +13,10 @@ import Bubble from './bubble';
 import { Responding } from './responding';
 import { Input } from '../ui/input';
 import { Button } from '../ui/button';
-import { IoSendSharp } from "react-icons/io5";
-import { BsPaperclip } from "react-icons/bs";
+import { Paperclip, Send } from 'lucide-react';
+import { Label } from '../ui/label';
 import { CardDescription, CardTitle } from '../ui/card';
 import Accordion from '../accordian';
-import { Label } from '@radix-ui/react-label';
-import { cn } from '@/lib/utils';
 
 type Props = {
   errors: any;
@@ -28,10 +28,12 @@ type Props = {
   theme?: string | null;
   textColor?: string | null;
   help?: boolean;
-  realtimeMode?: {
-    chatroom: string;
-    mode: boolean;
-  } | undefined;
+  realtimeMode?:
+    | {
+        chatroom: string;
+        mode: boolean;
+      }
+    | undefined;
   helpdesk: {
     id: string;
     question: string;
@@ -47,7 +49,6 @@ type Props = {
       }[]
     >
   >;
-  className?: string;
 };
 
 const BotWindow = forwardRef<HTMLDivElement, Props>(
@@ -65,29 +66,25 @@ const BotWindow = forwardRef<HTMLDivElement, Props>(
       textColor,
       theme,
       help,
-      className,
     },
     ref
   ) => {
     return (
-      <div className={cn(
-        "h-[600px] w-[330px] md:w-[380px] flex flex-col bg-white rounded-xl border border-black  overflow-hidden",
-        className
-      )}> {/*border border-purple-200 */}
+      <div className="h-[600px] w-[450px] flex flex-col bg-white rounded-xl mr-[80px] border-[1px] overflow-hidden">
         <div className="flex justify-between px-4 pt-4">
           <div className="flex gap-2">
             <Avatar className="w-20 h-20">
               <AvatarImage
-                src="/images/pic.png"
+                src="https://github.com/shadcn.png"
                 alt="@shadcn"
               />
-              <AvatarFallback>TK</AvatarFallback>
+              <AvatarFallback>CN</AvatarFallback>
             </Avatar>
             <div className="flex items-start flex-col">
-              <h3 className="text-lg mt-4 font-bold leading-none">
-                TechKidz Africa
+              <h3 className="text-lg font-bold leading-none">
+                Taxonomy Classifier
               </h3>
-              {/* <p className="text-sm">{domainName.split('.com')[0]}</p> */}
+              <p className="text-sm">{domainName.split('.com')[0]}</p>
               {realtimeMode?.mode && (
                 <RealTimeMode
                   setChats={setChat}
@@ -96,13 +93,21 @@ const BotWindow = forwardRef<HTMLDivElement, Props>(
               )}
             </div>
           </div>
+          <div className="relative w-16 h-16">
+            <Image
+              src="https://ucarecdn.com/019dd17d-b69b-4dea-a16b-60e0f25de1e9/propuser.png"
+              fill
+              alt="users"
+              style={{ objectFit: 'contain' }}
+            />
+          </div>
         </div>
-
         <TabsMenu
           triggers={BOT_TABS_MENU}
           className="bg-transparent border-[1px] border-border m-2"
         >
-          <TabsContent value="chat">
+
+        <TabsContent value="chat">
             <Separator orientation="horizontal" />
             <div className="flex flex-col h-full">
               <div
@@ -110,7 +115,7 @@ const BotWindow = forwardRef<HTMLDivElement, Props>(
                   background: theme || '',
                   color: textColor || '',
                 }}
-                className="px-3 flex h-[360px] flex-col py-5 gap-3 chat-window overflow-y-auto"
+                className="px-3 flex h-[330px] flex-col py-5 gap-3 chat-window overflow-y-auto"
                 ref={ref}
               >
                 {chats.map((chat, key) => (
@@ -121,45 +126,35 @@ const BotWindow = forwardRef<HTMLDivElement, Props>(
                 ))}
                 {onResponding && <Responding />}
               </div>
-
-              <form onSubmit={onChat} className="flex px-3 py-1 flex-col flex-1">
-                <div className="relative w-full mt-4">
-                  {/* Paperclip icon (now inside input) */}
-                  <Label
-                    htmlFor="upload"
-                    className="absolute left-3 top-1/2 transform -translate-y-1/2 cursor-pointer p-1 rounded-full hover:bg-gray-100"
-                  >
-                    <BsPaperclip className="w-5 h-5 text-gray-900" />
-                  </Label>
-
-                  {/* Input with adjusted padding for the icon */}
+              <form
+                onSubmit={onChat}
+                className="flex px-3 py-1 flex-col flex-1 bg-porcelain"
+              >
+                <div className="flex justify-between">
                   <Input
-                    {...register("content")}
-                    className="w-full pl-10 pr-12 py-2 text-sm  rounded-full"
-                    type="text"
-                    placeholder="Write a message"
+                    {...register('content')}
+                    placeholder="Type your message..."
+                    className="focus-visible:ring-0 flex-1 p-0 focus-visible:ring-offset-0 bg-porcelain rounded-none outline-none border-none"
                   />
-
-                  {/* Hidden file input */}
+                  <Button
+                    type="submit"
+                    className="mt-3"
+                  >
+                    <Send />
+                  </Button>
+                </div>
+                <Label htmlFor="upload">
+                  <Paperclip />
                   <Input
                     {...register('image')}
                     type="file"
                     id="upload"
                     className="hidden"
                   />
-
-                  {/* Send button (unchanged) */}
-                  <Button
-                    type="submit"
-                    className="absolute right-2 top-1/2 transform -translate-y-1/2 px-3 py-1 bg-transparent border-none shadow-none hover:bg-transparent focus:ring-0"
-                  >
-                    <IoSendSharp className="text-gray-800 w-6 h-6" />
-                  </Button>
-                </div>
+                </Label>
               </form>
             </div>
           </TabsContent>
-
           <TabsContent value="helpdesk">
             <div className="h-[485px] overflow-y-auto overflow-x-hidden p-4 flex flex-col gap-4">
               <div>
@@ -180,47 +175,13 @@ const BotWindow = forwardRef<HTMLDivElement, Props>(
             </div>
           </TabsContent>
         </TabsMenu>
+        <div className="flex justify-center ">
+          <p className="text-gray-400 text-xs">Powered By CortexAI</p>
+        </div>
       </div>
     );
   }
 );
 
-BotWindow.displayName = 'BotWindow';
 export default BotWindow;
-
-
-// <!DOCTYPE html>
-// <html lang="en">
-// <head>
-//     <meta charset="UTF-8">
-//     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-//     <title>Document</title>
-//     <style>
-//         .chat-frame {
-//             position: fixed;
-//             bottom: 15px;
-//             right: 15px;
-//             border: none;
-//         }
-//     </style>
-//     <script>
-//         document.addEventListener("DOMContentLoaded", () => {
-//             const iframe = document.createElement("iframe");
-//             iframe.src = "http://192.168.0.106:3000/chatbot";
-//             iframe.classList.add("chat-frame");
-//             document.body.appendChild(iframe);
-
-//             window.addEventListener("message", (e) => {
-//                 if (e.origin !== "http://192.168.0.106:3000") return;
-//                 let dimensions = JSON.parse(e.data);
-//                 iframe.width = dimensions.width;
-//                 iframe.height = dimensions.height;
-//                 iframe.contentWindow.postMessage("66b43aee-f0db-4246-be29-288f43c00ed1", "http://192.168.0.106:3000/");
-//             });
-//         });
-//     </script>
-// </head>
-// <body>
-
-// </body>
-// </html>
+BotWindow.displayName = 'BotWindow';

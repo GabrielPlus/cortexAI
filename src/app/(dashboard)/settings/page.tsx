@@ -1,5 +1,3 @@
-export const dynamic = 'force-dynamic'
-
 import InfoBar from '@/components/inforbar'
 import BillingSettings from '@/components/settings/billing-settings'
 import DarkModetoggle from '@/components/settings/dark-mode'

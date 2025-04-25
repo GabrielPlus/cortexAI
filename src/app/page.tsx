@@ -34,7 +34,7 @@ export default async function Home() {
       <section>
         <div className="flex items-center justify-center flex-col mt-[80px] gap-4 ">
           <span className="text-orange bg-orange/20 px-4 py-2 rounded-full text-sm">
-            TechKidz AI powered chatbot
+            An AI powered taxonomy classifier chatbot
           </span>
           <p className="text-center max-w-[500px]">
             Your AI powered job assistant assistant! Embed Cortex AI into any website

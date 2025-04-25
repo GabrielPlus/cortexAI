@@ -54,7 +54,7 @@ export const onIntegrateDomain = async (domain: string, icon: string) => {
                 icon,
                 chatBot: {
                   create: {
-                    welcomeMessage: 'Hey their, this chat may be AI-generated or real-time. By using it, you agree that TechKidz Africa may record this chat. Your personal data will be handled as per our policy',
+                    welcomeMessage: 'Hey there, have  a question? Text us here',
                   },
                 },
               },
@@ -107,15 +107,15 @@ export const onGetSubscriptionPlan = async () => {
 }
 
 export const onGetAllAccountDomains = async () => {
+  const user = await currentUser()
+  if (!user) return
   try {
-    const user = await currentUser()
-    if (!user) return { domains: [] } // Return empty array instead of undefined
-
-    const account = await client.user.findUnique({
+    const domains = await client.user.findUnique({
       where: {
         clerkId: user.id,
       },
       select: {
+        id: true,
         domains: {
           select: {
             name: true,
@@ -135,53 +135,11 @@ export const onGetAllAccountDomains = async () => {
         },
       },
     })
-
-    // Ensure we always return an object with domains array
-    return { 
-      domains: account?.domains || [] 
-    }
-    
+    return { ...domains }
   } catch (error) {
-    console.error("Failed to fetch domains:", error)
-    // Return consistent shape even in error case
-    return { domains: [] }
+    console.log(error)
   }
 }
-
-// export const onGetAllAccountDomains = async () => {
-//   const user = await currentUser()
-//   if (!user) return
-//   try {
-//     const domains = await client.user.findUnique({
-//       where: {
-//         clerkId: user.id,
-//       },
-//       select: {
-//         id: true,
-//         domains: {
-//           select: {
-//             name: true,
-//             icon: true,
-//             id: true,
-//             customer: {
-//               select: {
-//                 chatRoom: {
-//                   select: {
-//                     id: true,
-//                     live: true,
-//                   },
-//                 },
-//               },
-//             },
-//           },
-//         },
-//       },
-//     })
-//     return { ...domains }
-//   } catch (error) {
-//     console.log(error)
-//   }
-// }
 
 export const onGetCurrentDomainInfo = async (domain: string) => {
   const user = await currentUser()

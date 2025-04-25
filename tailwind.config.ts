@@ -22,7 +22,6 @@ const config = {
         cream: '#F5F5F5',
         gravel: '#4E4E4E',
         iridium: '#3F3F3F',
-        purple: '#e9d5ff',
         orange: '#FFA947',
         peach: '#FFE0BD',
         platinum: '#E6E6E6',

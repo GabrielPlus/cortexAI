@@ -1,10 +1,9 @@
 import { cn } from '@/lib/utils'
 import React from 'react'
-import type { DynamicOptionsLoadingProps } from 'next/dynamic'
 
 type SpinnerProps = {
   noPadding?: boolean
-} & DynamicOptionsLoadingProps // Extend with Next.js loading props
+}
 
 export const Spinner = ({ noPadding }: SpinnerProps) => {
   return (
