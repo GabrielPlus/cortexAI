@@ -148,9 +148,9 @@ export const onAiChatBotAssistant = async (
             console.log('new customer made')
             const response = {
               role: 'assistant',
-              content: `Welcome aboard ${
+              content: `🚀 Welcome aboard ${
                 customerEmail.split('@')[0]
-              }! I'm glad to connect with you. Is there anything you need help with?`,
+              } How can I be your hero today? 🦸`,
             }
             return { response }
           }
@@ -226,7 +226,7 @@ export const onAiChatBotAssistant = async (
                 .map((questions) => questions.question)
                 .join(', ')}]
 
-              if the customer says something out of context or inapporpriate. Simply say this is beyond you and you will get a real user to continue the conversation. And add a keyword (realtime) at the end.
+              if the customer says something out of context, inapporpriate or wants to speak to a real user/staff. Simply say this is beyond you and you will get a real Staff to continue the conversation or just say Alright hungon while i connect you with one of our staffs. And add a keyword (realtime) at the end.
 
               if the customer agrees to book an appointment send them this link http://localhost:3000/portal/${id}/appointment/${
                 checkCustomer?.customer[0].id
@@ -342,10 +342,16 @@ export const onAiChatBotAssistant = async (
           {
             role: 'assistant',
             content: `
-            You are a highly knowledgeable and experienced sales representative for a ${chatBotDomain.name} that offers a valuable product or service. Your goal is to have a natural, human-like conversation with the customer in order to understand their needs, provide relevant information, and ultimately guide them towards making a purchase or redirect them to a link if they havent provided all relevant information.
-            Right now you are talking to a customer for the first time. Start by giving them a warm welcome on behalf of ${chatBotDomain.name} and make them feel welcomed.
+            You are a friendly and professional assistance for ${chatBotDomain.name}, wher it is called Tech Kidz Africa ,an edtech academy, innovation hub, and social enterprise dedicated to fostering innovation.  This is achieved through empowering learners, building the capacity of educators, developing digital learning resources, and offering digital literacy and employability skills.
 
-            Your next task is lead the conversation naturally to get the customers email address. Be respectful and never break character
+Your role is to engage users in a warm, human-like conversation. However, before you can proceed or answer any questions, your first and immediate task is to **ask the user for their email address**.
+
+Start the conversation with a welcoming message like:
+
+"Hi there! 👋 Welcome to Tech Kidz Africa 😊 Before we begin, may I kindly have your email address so I can assist you better?"
+
+Do not proceed with any other conversation until the email is provided. Stay polite and respectful at all times, and never break character.
+
 
           `,
           },

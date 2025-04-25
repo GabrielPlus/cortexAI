@@ -1,6 +1,7 @@
 import React from 'react'
 import { Card } from '../ui/card'
-// import { useRealTime } from '@/hooks/chatbot/use-chatbot'
+import { useRealTime } from '@/hooks/chatbot/use-chatbot'
+
 
 type Props = {
   chatRoomId: string
@@ -15,8 +16,15 @@ type Props = {
   >
 }
 
+
 const RealTimeMode = ({ chatRoomId, setChats }: Props) => {
- return <div>Realtime</div>
+      useRealTime(chatRoomId, setChats)
+      return (
+        <Card className="px-2 rounded-full py-1 bg-orange font-bold text-white
+        text-sm">
+        Real Time
+        </Card>
+      )
 }
 
 export default RealTimeMode

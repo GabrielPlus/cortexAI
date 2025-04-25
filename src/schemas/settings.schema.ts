@@ -1,7 +1,7 @@
 import { z } from "zod";
 
 export const MAX_UPLOAD_SIZE = 1024 * 1024 * 2 // 2MB
-export const ACCEPTED_FILE_TYPES = ['image/png', 'image/jpg', 'image/jpeg']
+export const ACCEPTED_FILE_TYPES = ['image/png', 'image/jpg', 'image/jpeg', 'image/gif']
 
 export type DomainSettingsProps = {
   domain?: string
@@ -60,20 +60,18 @@ export const DomainSettingsSchema = z
   .refine(
     (schema) => {
       if (schema.image?.length) {
-        if (
-          ACCEPTED_FILE_TYPES.includes(schema.image?.[0].type!) &&
-          schema.image?.[0].size <= MAX_UPLOAD_SIZE
-        ) {
-          return true
+        const file = schema.image[0];
+        if (ACCEPTED_FILE_TYPES.includes(file.type) && file.size <= MAX_UPLOAD_SIZE) {
+          return true;
         }
       }
       if (!schema.image?.length) {
-        return true
+        return true;
       }
     },
     {
       message:
-        'The fill must be less then 2MB, and on PNG, JPEG & JPG files are accepted',
+        'The file must be less than 2MB, and only PNG, JPEG, JPG & GIF files are accepted',
       path: ['image'],
     }
   )
