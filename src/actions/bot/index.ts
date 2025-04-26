@@ -84,6 +84,18 @@ export const onAiChatBotAssistant = async (
             question: true,
           },
         },
+        helpdesk: {
+          where: {
+            NOT: {
+              answer: "",
+            },
+          },
+          select: {
+            question: true,
+            answer: true,
+          },
+        }
+        
       },
     })
     if (chatBotDomain) {
@@ -135,12 +147,19 @@ export const onAiChatBotAssistant = async (
                 create: {
                   email: customerEmail,
                   questions: {
-                    create: chatBotDomain.filterQuestions,
+                    create: [
+                      ...chatBotDomain.filterQuestions, // Include filterQuestions
+                      ...chatBotDomain.helpdesk.map((item) => ({
+                        question: item.question, // Add question from helpdesk
+                        answer: item.answer,     // Add answer from helpdesk
+                      })),
+                    ],
                   },
                   chatRoom: {
                     create: {},
                   },
-                },
+                }
+                
               },
             },
           })
@@ -148,9 +167,9 @@ export const onAiChatBotAssistant = async (
             console.log('new customer made')
             const response = {
               role: 'assistant',
-              content: `🚀 Welcome aboard ${
+              content: `Welcome aboard ${
                 customerEmail.split('@')[0]
-              } How can I be your hero today? 🦸`,
+              }! I'm glad to connect with you. Is there anything you need help with?`,
             }
             return { response }
           }
@@ -210,7 +229,7 @@ export const onAiChatBotAssistant = async (
             {
               role: 'assistant',
               content: `
-              You will get an array of questions that you must ask the customer. 
+              You will get an array of questions that you must ask the website visitor. 
               
               Progress the conversation using those questions. 
               
@@ -226,7 +245,7 @@ export const onAiChatBotAssistant = async (
                 .map((questions) => questions.question)
                 .join(', ')}]
 
-              if the customer says something out of context, inapporpriate or wants to speak to a real user/staff. Simply say this is beyond you and you will get a real Staff to continue the conversation or just say Alright hungon while i connect you with one of our staffs. And add a keyword (realtime) at the end.
+              if the user says he wants to speak to a real staff, something out of context or inapporpriate. Simply say this is beyond you and you will get a real staff to continue the conversation. And add a keyword (realtime) at the end.
 
               if the customer agrees to book an appointment send them this link http://localhost:3000/portal/${id}/appointment/${
                 checkCustomer?.customer[0].id
@@ -342,18 +361,17 @@ export const onAiChatBotAssistant = async (
           {
             role: 'assistant',
             content: `
-            You are a friendly and professional assistance for ${chatBotDomain.name}, wher it is called Tech Kidz Africa ,an edtech academy, innovation hub, and social enterprise dedicated to fostering innovation.  This is achieved through empowering learners, building the capacity of educators, developing digital learning resources, and offering digital literacy and employability skills.
-
-Your role is to engage users in a warm, human-like conversation. However, before you can proceed or answer any questions, your first and immediate task is to **ask the user for their email address**.
-
-Start the conversation with a welcoming message like:
-
-"Hi there! 👋 Welcome to Tech Kidz Africa 😊 Before we begin, may I kindly have your email address so I can assist you better?"
-
-Do not proceed with any other conversation until the email is provided. Stay polite and respectful at all times, and never break character.
-
-
-          `,
+           You are a friendly and professional assistance for ${chatBotDomain.name} that offers a valuable product or service. Your goal is to have a natural, human-like conversation with the customer in order to understand their needs, provide relevant information, and ultimately guide them towards making a purchase or redirect them to a link if they haven't provided all relevant information.
+            Right now, you are talking to a customer for the first time. Start by giving them a warm welcome on behalf of ${chatBotDomain.name} and make them feel welcomed.
+            Your next task is to lead the conversation naturally to get the customer's email address. Be respectful and never break character.
+            Users will ask you questions, please reflect on help desk questions.
+            Here are the Helpdesk questions and answers for your reference:
+    [${chatBotDomain.helpdesk
+      .map((item) => `Q: ${item.question} | A: ${item.answer}`)
+      .join(', ')}]
+            The array of questions should be used to ask and validate responses if they ask for clarifications about how the service works.
+            Respond with your natural language first, if you need to respond by using one of the questions, you must ask with an added (complete) keyword, so you know it is part of the predefined customer interaction.
+            `,
           },
           ...chat,
           {

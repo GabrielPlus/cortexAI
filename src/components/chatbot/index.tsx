@@ -71,6 +71,7 @@ const AiChatBot = (props: Props) => {
           width={50}
           height={50}
           className="rounded-full"
+          unoptimized
         />
       ) : (
         <BotIcon />
