@@ -1,4 +1,3 @@
-'use client'
 import { useAuthContextHook } from '@/context/use-auth-context'
 import React, { useState } from 'react'
 import { useFormContext } from 'react-hook-form'
@@ -8,12 +7,12 @@ import { Spinner } from '@/components/spinner'
 
 const DetailForm = dynamic(() => import('./account-details-form'), {
   ssr: false,
-  loading: Spinner,
+  loading: () => <Spinner noPadding={true} />, // Pass noPadding to match the expected prop
 })
 
 const OTPForm = dynamic(() => import('./otp-form'), {
   ssr: false,
-  loading: Spinner,
+  loading: () => <Spinner noPadding={true} />, // Pass noPadding to match the expected prop
 })
 
 type Props = {}
