@@ -1,18 +1,14 @@
-import { cn } from '@/lib/utils'
 import React from 'react'
+import { cn } from '@/lib/utils'
 
-// Type for the loading props expected by the dynamic import
-type DynamicOptionsLoadingProps = {
-  isLoading?: boolean
-  pastDelay?: boolean
+type SpinnerProps = {
+  noPadding?: boolean
 }
 
-export const Spinner = ({ isLoading, pastDelay }: DynamicOptionsLoadingProps) => {
-  // Return null if not loading or past the delay threshold
-  if (!isLoading || !pastDelay) return null
-  
+export const Spinner = ({ noPadding = false }: SpinnerProps) => {
+  const paddingClass = noPadding ? '' : 'py-10'; // Default padding if noPadding is not provided
   return (
-    <div className={cn('w-full flex justify-center', 'py-10')}>
+    <div className={cn('w-full flex justify-center', paddingClass)}>
       <div role="status">
         <svg
           aria-hidden="true"

@@ -17,15 +17,10 @@ export const onStoreConversations = async (
   role: 'assistant' | 'user'
 ) => {
   await client.chatRoom.update({
-    where: {
-      id,
-    },
+    where: { id },
     data: {
       message: {
-        create: {
-          message,
-          role,
-        },
+        create: { message, role },
       },
     },
   })
@@ -34,9 +29,7 @@ export const onStoreConversations = async (
 export const onGetCurrentChatBot = async (id: string) => {
   try {
     const chatbot = await client.domain.findUnique({
-      where: {
-        id,
-      },
+      where: { id },
       select: {
         helpdesk: true,
         name: true,
@@ -52,10 +45,7 @@ export const onGetCurrentChatBot = async (id: string) => {
         },
       },
     })
-
-    if (chatbot) {
-      return chatbot
-    }
+    return chatbot
   } catch (error) {
     console.log(error)
   }
@@ -71,315 +61,49 @@ export const onAiChatBotAssistant = async (
 ) => {
   try {
     const chatBotDomain = await client.domain.findUnique({
-      where: {
-        id,
-      },
+      where: { id },
       select: {
         name: true,
         filterQuestions: {
-          where: {
-            answered: null,
-          },
-          select: {
-            question: true,
-          },
+          where: { answered: null },
+          select: { question: true },
         },
         helpdesk: {
           where: {
-            NOT: {
-              answer: "",
-            },
+            NOT: { answer: '' },
           },
-          select: {
-            question: true,
-            answer: true,
-          },
-        }
-        
+          select: { question: true, answer: true },
+        },
       },
     })
-    if (chatBotDomain) {
-      const extractedEmail = extractEmailsFromString(message)
-      if (extractedEmail) {
-        customerEmail = extractedEmail[0]
-      }
 
-      if (customerEmail) {
-        const checkCustomer = await client.domain.findUnique({
-          where: {
-            id,
-          },
-          select: {
-            User: {
-              select: {
-                clerkId: true,
-              },
-            },
-            name: true,
-            customer: {
-              where: {
-                email: {
-                  startsWith: customerEmail,
-                },
-              },
-              select: {
-                id: true,
-                email: true,
-                questions: true,
-                chatRoom: {
-                  select: {
-                    id: true,
-                    live: true,
-                    mailed: true,
-                  },
-                },
-              },
-            },
-          },
-        })
-        if (checkCustomer && !checkCustomer.customer.length) {
-          const newCustomer = await client.domain.update({
-            where: {
-              id,
-            },
-            data: {
-              customer: {
-                create: {
-                  email: customerEmail,
-                  questions: {
-                    create: [
-                      ...chatBotDomain.filterQuestions, // Include filterQuestions
-                      ...chatBotDomain.helpdesk.map((item) => ({
-                        question: item.question, // Add question from helpdesk
-                        answer: item.answer,     // Add answer from helpdesk
-                      })),
-                    ],
-                  },
-                  chatRoom: {
-                    create: {},
-                  },
-                }
-                
-              },
-            },
-          })
-          if (newCustomer) {
-            console.log('new customer made')
-            const response = {
-              role: 'assistant',
-              content: `Welcome aboard ${
-                customerEmail.split('@')[0]
-              }! I'm glad to connect with you. Is there anything you need help with?`,
-            }
-            return { response }
-          }
-        }
-        if (checkCustomer && checkCustomer.customer[0].chatRoom[0].live) {
-          await onStoreConversations(
-            checkCustomer?.customer[0].chatRoom[0].id!,
-            message,
-            author
-          )
-          
-          onRealTimeChat(
-            checkCustomer.customer[0].chatRoom[0].id,
-            message,
-            'user',
-            author
-          )
+    if (!chatBotDomain) return
 
-          if (!checkCustomer.customer[0].chatRoom[0].mailed) {
-            const user = await clerkClient.users.getUser(
-              checkCustomer.User?.clerkId!
-            )
+    const extractedEmail = extractEmailsFromString(message)
+    if (extractedEmail) {
+      customerEmail = extractedEmail[0]
+    }
 
-            onMailer(user.emailAddresses[0].emailAddress)
-
-            //update mail status to prevent spamming
-            const mailed = await client.chatRoom.update({
-              where: {
-                id: checkCustomer.customer[0].chatRoom[0].id,
-              },
-              data: {
-                mailed: true,
-              },
-            })
-
-            if (mailed) {
-              return {
-                live: true,
-                chatRoom: checkCustomer.customer[0].chatRoom[0].id,
-              }
-            }
-          }
-          return {
-            live: true,
-            chatRoom: checkCustomer.customer[0].chatRoom[0].id,
-          }
-        }
-
-        await onStoreConversations(
-          checkCustomer?.customer[0].chatRoom[0].id!,
-          message,
-          author
-        )
-
-        const chatCompletion = await openai.chat.completions.create({
-          messages: [
-            {
-              role: 'assistant',
-              content: `
-              You will get an array of questions that you must ask the website visitor. 
-              
-              Progress the conversation using those questions. 
-              
-              Whenever you ask a question from the array i need you to add a keyword at the end of the question (complete) this keyword is extremely important. 
-              
-              Do not forget it.
-
-              only add this keyword when your asking a question from the array of questions. No other question satisfies this condition
-
-              Always maintain character and stay respectfull.
-
-              The array of questions : [${chatBotDomain.filterQuestions
-                .map((questions) => questions.question)
-                .join(', ')}]
-
-              if the user says he wants to speak to a real staff, something out of context or inapporpriate. Simply say this is beyond you and you will get a real staff to continue the conversation. And add a keyword (realtime) at the end.
-
-              if the customer agrees to book an appointment send them this link http://localhost:3000/portal/${id}/appointment/${
-                checkCustomer?.customer[0].id
-              }
-
-              if the customer wants to buy a product redirect them to the payment page http://localhost:3000/portal/${id}/payment/${
-                checkCustomer?.customer[0].id
-              }
-          `,
-            },
-            ...chat,
-            {
-              role: 'user',
-              content: message,
-            },
-          ],
-          model: 'gpt-3.5-turbo',
-        })
-
-        if (chatCompletion.choices[0].message.content?.includes('(realtime)')) {
-          const realtime = await client.chatRoom.update({
-            where: {
-              id: checkCustomer?.customer[0].chatRoom[0].id,
-            },
-            data: {
-              live: true,
-            },
-          })
-
-          if (realtime) {
-            const response = {
-              role: 'assistant',
-              content: chatCompletion.choices[0].message.content.replace(
-                '(realtime)',
-                ''
-              ),
-            }
-
-            await onStoreConversations(
-              checkCustomer?.customer[0].chatRoom[0].id!,
-              response.content,
-              'assistant'
-            )
-
-            return { response }
-          }
-        }
-        if (chat[chat.length - 1].content.includes('(complete)')) {
-          const firstUnansweredQuestion =
-            await client.customerResponses.findFirst({
-              where: {
-                customerId: checkCustomer?.customer[0].id,
-                answered: null,
-              },
-              select: {
-                id: true,
-              },
-              orderBy: {
-                question: 'asc',
-              },
-            })
-          if (firstUnansweredQuestion) {
-            await client.customerResponses.update({
-              where: {
-                id: firstUnansweredQuestion.id,
-              },
-              data: {
-                answered: message,
-              },
-            })
-          }
-        }
-
-        if (chatCompletion) {
-          const generatedLink = extractURLfromString(
-            chatCompletion.choices[0].message.content as string
-          )
-
-          if (generatedLink) {
-            const link = generatedLink[0]
-            const response = {
-              role: 'assistant',
-              content: `Great! you can follow the link to proceed`,
-              link: link.slice(0, -1),
-            }
-
-            await onStoreConversations(
-              checkCustomer?.customer[0].chatRoom[0].id!,
-              `${response.content} ${response.link}`,
-              'assistant'
-            )
-
-            return { response }
-          }
-
-          const response = {
-            role: 'assistant',
-            content: chatCompletion.choices[0].message.content,
-          }
-
-          await onStoreConversations(
-            checkCustomer?.customer[0].chatRoom[0].id!,
-            `${response.content}`,
-            'assistant'
-          )
-
-          return { response }
-        }
-      }
-      console.log('No customer')
+    if (!customerEmail) {
       const chatCompletion = await openai.chat.completions.create({
+        model: 'gpt-3.5-turbo',
         messages: [
           {
             role: 'assistant',
             content: `
-           You are a friendly and professional assistance for ${chatBotDomain.name} that offers a valuable product or service. Your goal is to have a natural, human-like conversation with the customer in order to understand their needs, provide relevant information, and ultimately guide them towards making a purchase or redirect them to a link if they haven't provided all relevant information.
-            Right now, you are talking to a customer for the first time. Start by giving them a warm welcome on behalf of ${chatBotDomain.name} and make them feel welcomed.
-            Your next task is to lead the conversation naturally to get the customer's email address. Be respectful and never break character.
-            Users will ask you questions, please reflect on help desk questions.
-            Here are the Helpdesk questions and answers for your reference:
-    [${chatBotDomain.helpdesk
-      .map((item) => `Q: ${item.question} | A: ${item.answer}`)
-      .join(', ')}]
-            The array of questions should be used to ask and validate responses if they ask for clarifications about how the service works.
-            Respond with your natural language first, if you need to respond by using one of the questions, you must ask with an added (complete) keyword, so you know it is part of the predefined customer interaction.
-            `,
+You are a helpful, friendly assistant for ${chatBotDomain.name}.
+- Your first priority is to politely and naturally ask for the visitor's email address.
+- Do NOT proceed to helpdesk-related questions until the email is collected.
+- Keep the conversation very respectful, professional, and friendly.
+- After getting the email, smoothly move into answering Helpdesk questions based on the following references:
+[${chatBotDomain.helpdesk.map((item) => `Q: ${item.question} | A: ${item.answer}`).join(', ')}]
+
+If the user wants to speak to a real staff, reply politely and add (realtime) keyword at the end.
+`,
           },
           ...chat,
-          {
-            role: 'user',
-            content: message,
-          },
+          { role: 'user', content: message },
         ],
-        model: 'gpt-3.5-turbo',
       })
 
       if (chatCompletion) {
@@ -387,7 +111,160 @@ export const onAiChatBotAssistant = async (
           role: 'assistant',
           content: chatCompletion.choices[0].message.content,
         }
+        return { response }
+      }
+    }
 
+    // If email is already captured, continue normal flow
+    const checkCustomer = await client.domain.findUnique({
+      where: { id },
+      select: {
+        User: { select: { clerkId: true } },
+        name: true,
+        customer: {
+          where: { email: { startsWith: customerEmail } },
+          select: {
+            id: true,
+            email: true,
+            questions: true,
+            chatRoom: { select: { id: true, live: true, mailed: true } },
+          },
+        },
+      },
+    })
+
+    if (checkCustomer) {
+      if (!checkCustomer.customer.length) {
+        const newCustomer = await client.domain.update({
+          where: { id },
+          data: {
+            customer: {
+              create: {
+                email: customerEmail,
+                questions: {
+                  create: [
+                    ...chatBotDomain.filterQuestions,
+                    ...chatBotDomain.helpdesk.map((item) => ({
+                      question: item.question,
+                      answered: item.answer,
+                    })),
+                  ],
+                },
+                chatRoom: { create: {} },
+              },
+            },
+          },
+        })
+
+        if (newCustomer) {
+          console.log('New customer created')
+          const email = customerEmail ?? 'guest@example.com'
+          const response = {
+            role: 'assistant',
+            content: `Welcome aboard ${email.split('@')[0]}! I'm excited to assist you. How may I help you today?`,
+          }
+          return { response }
+        }
+        
+      }
+
+      const currentChatRoom = checkCustomer.customer[0].chatRoom[0]
+
+      if (currentChatRoom.live) {
+        await onStoreConversations(currentChatRoom.id!, message, author)
+        onRealTimeChat(currentChatRoom.id!, message, 'user', author)
+
+        if (!currentChatRoom.mailed) {
+          const user = await clerkClient.users.getUser(checkCustomer.User?.clerkId!)
+          await onMailer(user.emailAddresses[0].emailAddress)
+
+          await client.chatRoom.update({
+            where: { id: currentChatRoom.id },
+            data: { mailed: true },
+          })
+        }
+
+        return { live: true, chatRoom: currentChatRoom.id }
+      }
+
+      await onStoreConversations(currentChatRoom.id!, message, author)
+
+      const chatCompletion = await openai.chat.completions.create({
+        model: 'gpt-3.5-turbo',
+        messages: [
+          {
+            role: 'assistant',
+            content: `
+You are a helpful assistant for ${chatBotDomain.name}.
+Your duties:
+- Answer questions based only on this Helpdesk:
+[${chatBotDomain.helpdesk.map((item) => `Q: ${item.question} | A: ${item.answer}`).join(', ')}]
+
+- If the customer says something irrelevant, out-of-context, or wants human help, politely escalate and add (realtime) keyword.
+- If the customer wants to book an appointment, send them this link: http://localhost:3000/portal/${id}/appointment/${checkCustomer.customer[0].id}
+- If the customer wants to buy a product, send them to this payment page: http://localhost:3000/portal/${id}/payment/${checkCustomer.customer[0].id}
+
+Stay respectful, friendly, and never break character.
+          `,
+          },
+          ...chat,
+          { role: 'user', content: message },
+        ],
+      })
+
+      if (chatCompletion) {
+        const generatedContent = chatCompletion.choices[0].message.content ?? ''
+
+        if (generatedContent.includes('(realtime)')) {
+          await client.chatRoom.update({
+            where: { id: currentChatRoom.id },
+            data: { live: true },
+          })
+
+          const response = {
+            role: 'assistant',
+            content: generatedContent.replace('(realtime)', ''),
+          }
+
+          await onStoreConversations(currentChatRoom.id!, response.content, 'assistant')
+          return { response }
+        }
+
+        if (chat[chat.length - 1]?.content.includes('(complete)')) {
+          const firstUnansweredQuestion = await client.customerResponses.findFirst({
+            where: {
+              customerId: checkCustomer.customer[0].id,
+              answered: null,
+            },
+            orderBy: { question: 'asc' },
+            select: { id: true },
+          })
+
+          if (firstUnansweredQuestion) {
+            await client.customerResponses.update({
+              where: { id: firstUnansweredQuestion.id },
+              data: { answered: message },
+            })
+          }
+        }
+
+        const generatedLink = extractURLfromString(generatedContent)
+        if (generatedLink) {
+          const response = {
+            role: 'assistant',
+            content: `Awesome! You can proceed here: ${generatedLink[0].slice(0, -1)}`,
+          }
+
+          await onStoreConversations(currentChatRoom.id!, response.content, 'assistant')
+          return { response }
+        }
+
+        const response = {
+          role: 'assistant',
+          content: generatedContent,
+        }
+
+        await onStoreConversations(currentChatRoom.id!, response.content, 'assistant')
         return { response }
       }
     }
