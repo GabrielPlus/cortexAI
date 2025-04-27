@@ -161,7 +161,7 @@ If the user wants to speak to a real staff, reply politely and add (realtime) ke
           const email = customerEmail ?? 'guest@example.com'
           const response = {
             role: 'assistant',
-            content: `Welcome aboard ${email.split('@')[0]}! I'm excited to assist you. How may I help you today?`,
+            content: `Welcome aboard ${email.split('@')[0]}! I'm TKA virtual assistant. How can I help you today?`,
           }
           return { response }
         }
