@@ -28,11 +28,7 @@ const Bubble = ({ message, createdAt }: Props) => {
     >
       {message.role == 'assistant' ? (
         <Avatar className="w-5 h-5">
-          <AvatarImage
-            src="https://github.com/shadcn.png"
-            alt="@shadcn"
-          />
-          <AvatarFallback>CN</AvatarFallback>
+          <AvatarFallback>T</AvatarFallback>
         </Avatar>
       ) : (
         <Avatar className="w-5 h-5">
@@ -46,7 +42,7 @@ const Bubble = ({ message, createdAt }: Props) => {
           'flex flex-col gap-3 min-w-[200px] max-w-[300px] p-4 rounded-t-md',
           message.role == 'assistant'
             ? 'bg-muted rounded-r-md'
-            : 'bg-grandis rounded-l-md'
+            : 'bg-purple-100 rounded-l-md'
         )}
       >
         {createdAt ? (

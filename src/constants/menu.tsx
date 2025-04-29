@@ -26,11 +26,6 @@ export const SIDE_BAR_MENU: SIDE_BAR_MENU_PROPS[] = [
     path: 'conversation',
   },
   {
-    label: 'Integrations',
-    icon: <IntegrationsIcon />,
-    path: 'integration',
-  },
-  {
     label: 'Settings',
     icon: <SettingsIcon />,
     path: 'settings',
@@ -39,11 +34,6 @@ export const SIDE_BAR_MENU: SIDE_BAR_MENU_PROPS[] = [
     label: 'Appointments',
     icon: <CalIcon />,
     path: 'appointment',
-  },
-  {
-    label: 'Email Marketing',
-    icon: <EmailIcon />,
-    path: 'email-marketing',
   },
 ]
 
@@ -91,11 +81,7 @@ export const EMAIL_MARKETING_HEADER = ['Id', 'Email', 'Answers', 'Domain']
 
 export const BOT_TABS_MENU: TABS_MENU_PROPS[] = [
   {
-    label: 'chat',
+    label: 'Talk to Me',
     icon: <ChatIcon />,
-  },
-  {
-    label: 'helpdesk',
-    icon: <HelpDeskIcon />,
   },
 ]
