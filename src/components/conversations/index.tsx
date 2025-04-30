@@ -11,27 +11,27 @@ import { CardDescription } from '../ui/card'
 import { Separator } from '../ui/separator'
 
 type Props = {
-    domains?:
-    | {
-        name: string
-        id: string
-        icon: string
-    }[]
-    | undefined
+  domains?:
+  | {
+    name: string
+    id: string
+    icon: string
+  }[]
+  | undefined
 }
 
 const ConversationMenu = ({ domains }: Props) => {
   const { register, chatRooms, loading, onGetActiveChatMessages } =
-  useConversation()
+    useConversation()
   return (
-    <div className="py-3 px-0">
+    <div className="py-3 px-3">
       <TabsMenu triggers={TABS_MENU}>
-        <TabsContent value="unread">
+        <TabsContent value="All inbox">
           <ConversationSearch
             domains={domains}
             register={register}
           />
-          <div className="flex flex-col">
+          <div className="flex flex-col gap-2 max-h-[500px] overflow-y-auto pr-2">
             <Loader loading={loading}>
               {chatRooms.length ? (
                 chatRooms.map((room) => (
@@ -46,31 +46,11 @@ const ConversationMenu = ({ domains }: Props) => {
                   />
                 ))
               ) : (
-                <CardDescription>No chats for you domain</CardDescription>
+                <CardDescription>No chats for your domain</CardDescription>
               )}
             </Loader>
           </div>
-        </TabsContent>
-        <TabsContent value="all">
-          <Separator
-            orientation="horizontal"
-            className="mt-5"
-          />
-          all
-        </TabsContent>
-        <TabsContent value="expired">
-          <Separator
-            orientation="horizontal"
-            className="mt-5"
-          />
-          expired
-        </TabsContent>
-        <TabsContent value="starred">
-          <Separator
-            orientation="horizontal"
-            className="mt-5"
-          />
-          starred
+
         </TabsContent>
       </TabsMenu>
     </div>

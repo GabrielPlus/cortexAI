@@ -29,7 +29,7 @@ const HelpDesk = ({ id }: Props) => {
     <div className="flex flex-col gap-3">
             <Section
               label="Question"
-              message="Add a question that you believe is frequently asked By Job seekers."
+              message="Add a question that you believe is frequently asked By Website visitors."
             />
             <FormGenerator
               inputType="input"

@@ -12,10 +12,6 @@ const InfoBar = (props: Props) => {
       <BreadCrumb />
       <div className="flex gap-3 items-center mb-8">
         <div>
-          <Card className="rounded-xl flex gap-3 py-3 px-4 text-ghost">
-            <Trash />
-            <Star></Star>
-          </Card>
         </div>
         <Avatar>
           <AvatarFallback className="bg-orange text-white">

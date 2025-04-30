@@ -12,7 +12,9 @@ const DomainSettingsPage = async ({ params }: Props) => {
   if (!domain) redirect('/dashboard')
     return (
         <>
+        <div className="px-3">
           <InfoBar />
+          </div>
           <div className="overflow-y-auto w-full chat-window flex-1 h-0">
         <SettingsForm
           plan={domain.subscription?.plan!}

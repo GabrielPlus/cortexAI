@@ -13,7 +13,9 @@ const Page = async (props: Props) => {
   const bookings = await getUserAppointments()
   return (
     <>
+    <div className="px-5">
       <InfoBar />
+      </div>
       <div className="overflow-y-auto w-full chat-window flex-
       h-50">
         <div className="flex gap-5 flex-wrap">

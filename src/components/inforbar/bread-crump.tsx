@@ -38,14 +38,14 @@ const BreadCrumb = (props: Props) => {
         {page == 'settings'
           ? 'Manage your account settings, preferences and integrations'
           : page == 'dashboard'
-          ? 'A detailed overview of your metrics, usage, students, and more'
+          ? 'A detailed overview of your metrics, usage, users, and more'
           : page == 'appointment'
           ? 'View and edit all your  appointments'
           : page == 'email-marketing'
-          ? 'Send bulk emails to your students and staff'
+          ? 'Send bulk emails to your users'
           : page == 'integration'
-          ? 'Connect your Taxonomy Livelihoods system into Cortex-AI'
-          : 'odify domain settings, customize chatbot options, input classification queries, and train your bot to assist with job classifications, skills mapping, and career recommendations'}
+          ? 'Connect your Website into Cortex-AI'
+          : 'modify domain settings, customize chatbot options, input hepdesk queries, and train your bot to assist with questions, skills mapping, and career recommendations'}
       </p>
     </div>
   )

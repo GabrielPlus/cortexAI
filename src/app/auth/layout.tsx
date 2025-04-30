@@ -32,7 +32,7 @@ const Layout = async ({ children }: Props) => {
       </div>
       <div className="hidden lg:flex flex-1 max-h-full overflow-hidden relative bg-cream flex-col pt-10 pl-24 gap-3">
         <h2 className="text-gravel text-2xl md:text-4xl font-bold">
-          Hi, I’m your AI powered sales assistant, Cortex!
+          Hi, I’m your AI powered chat assistant, Cortex!
         </h2>
         <p className="text-iridium text-sm md:text-base mb-10">
           Cortex is capable of capturing lead information without a form...{' '}

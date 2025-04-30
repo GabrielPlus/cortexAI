@@ -23,7 +23,7 @@ const ConversationSearch = ({ register, domains }: Props) => {
           disabled
           selected
         >
-          Domain name
+          Select Domain
         </option>
         {domains?.map((domain) => (
           <option

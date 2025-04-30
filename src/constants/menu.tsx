@@ -44,20 +44,8 @@ type TABS_MENU_PROPS = {
 
 export const TABS_MENU: TABS_MENU_PROPS[] = [
   {
-    label: 'unread',
+    label: 'All inbox',
     icon: <EmailIcon />,
-  },
-  {
-    label: 'all',
-    icon: <EmailIcon />,
-  },
-  {
-    label: 'expired',
-    icon: <TimerIcon />,
-  },
-  {
-    label: 'starred',
-    icon: <StarIcon />,
   },
 ]
 
