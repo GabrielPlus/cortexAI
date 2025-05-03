@@ -18,7 +18,7 @@ const Page = async (props: Props) => {
       </div>
       <div className="overflow-y-auto w-full chat-window flex-
       h-50">
-        <div className="flex gap-5 flex-wrap">
+        <div className="flex flex-col gap-5 w-fit">
           <DashboardCard
             value={clients || 0}
             title="Potential Visitors"

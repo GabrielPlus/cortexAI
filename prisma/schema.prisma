@@ -39,6 +39,7 @@ model Domain {
   helpdesk        HelpDesk[]
   filterQuestions FilterQuestions[]
   products        Product[]
+   chatSession      ChatSession[] 
 
   customer   Customer[]
   User       User?      @relation(fields: [userId], references: [id], onDelete: Cascade)
@@ -104,6 +105,7 @@ model Customer {
 
   Domain   Domain? @relation(fields: [domainId], references: [id], onDelete: Cascade)
   domainId String? @db.Uuid
+  chatSession      ChatSession[] 
 }
 
 model ChatRoom {
@@ -139,6 +141,20 @@ model Bookings {
   domainId   String?   @db.Uuid
   createdAt  DateTime  @default(now())
 }
+
+model ChatSession {
+  id           String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  customerEmail String?
+  domain       Domain?  @relation(fields: [domainId], references: [id], onDelete: Cascade)
+  domainId     String?  @db.Uuid
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  customer     Customer? @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  customerId   String?  @db.Uuid
+
+  @@index([domainId])
+}
+
 
 model Campaign {
   id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid

@@ -1,4 +1,4 @@
-import { onAiChatBotAssistant, onGetCurrentChatBot } from '@/actions/bot'
+import { onAiChatBotAssistant, onGetCurrentChatBot, createNewSession } from '@/actions/bot'
 import { postToParent, pusherClient } from '@/lib/utils'
 import {
   ChatBotMessageProps,
@@ -55,6 +55,7 @@ export const useChatBot = () => {
   const [onRealTime, setOnRealTime] = useState<
     { chatroom: string; mode: boolean } | undefined
   >(undefined)
+  const [sessionId, setSessionId] = useState<string>('')
 
   const onScrollToBottom = () => {
     messageWindowRef.current?.scroll({
@@ -83,6 +84,10 @@ export const useChatBot = () => {
     setCurrentBotId(id)
     const chatbot = await onGetCurrentChatBot(id)
     if (chatbot) {
+      // Create or get session ID
+      const newSessionId = await createNewSession(id)
+      setSessionId(newSessionId)
+      
       setOnChats((prev) => [
         ...prev,
         {
@@ -128,7 +133,8 @@ export const useChatBot = () => {
         currentBotId!,
         onChats,
         'user',
-        uploaded.uuid
+        uploaded.uuid,
+        sessionId // Pass sessionId
       )
 
       if (response) {
@@ -163,7 +169,8 @@ export const useChatBot = () => {
         currentBotId!,
         onChats,
         'user',
-        values.content
+        values.content,
+        sessionId // Pass sessionId
       )
 
       if (response) {

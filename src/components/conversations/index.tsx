@@ -8,7 +8,6 @@ import ConversationSearch from './search'
 import { Loader } from '../loader'
 import ChatCard from './chart-card'
 import { CardDescription } from '../ui/card'
-import { Separator } from '../ui/separator'
 
 type Props = {
   domains?:
