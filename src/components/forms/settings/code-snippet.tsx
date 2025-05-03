@@ -29,16 +29,16 @@ const CodeSnippet = ({ id }: Props) => {
         }
     ')
     
-    iframe.src = "http://192.168.60.75:3000/chatbot"
+    iframe.src = "http://13.49.246.192:3000/chatbot"
     iframe.classList.add('chat-frame')
     document.body.appendChild(iframe)
     
     window.addEventListener("message", (e) => {
-        if(e.origin !== "http://192.168.60.75:3000") return null
+        if(e.origin !== "http://13.49.246.192:3000") return null
         let dimensions = JSON.parse(e.data)
         iframe.width = dimensions.width
         iframe.height = dimensions.height
-        iframe.contentWindow.postMessage("${id}", "http://192.168.60.75:3000/")
+        iframe.contentWindow.postMessage("${id}", "http://13.49.246.192:3000/")
     })
         `
 
