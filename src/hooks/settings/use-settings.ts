@@ -1,4 +1,4 @@
-import { onChatBotImageUpdate, onCreateFilterQuestions, onCreateHelpDeskQuestion, onDeleteUserDomain, onGetAllFilterQuestions, onGetAllHelpDeskQuestions, onUpdateDomain, onUpdateWelcomeMessage } from '@/actions/settings'
+import { onChatBotImageUpdate, onCreateFilterQuestions, onUpdateHelpDeskQuestion, onCreateHelpDeskQuestion, onDeleteUserDomain, onGetAllFilterQuestions, onGetAllHelpDeskQuestions, onUpdateDomain, onUpdateWelcomeMessage } from '@/actions/settings'
 import { useToast } from '@/components/ui/use-toast'
 import { DomainSettingsProps, DomainSettingsSchema, FilterQuestionsProps, FilterQuestionsSchema, HelpDeskQuestionsProps, HelpDeskQuestionsSchema } from '@/schemas/settings.schema'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -100,45 +100,86 @@ export const useHelpDesk = (id: string) => {
     formState: { errors },
     handleSubmit,
     reset,
+    setValue,
   } = useForm<HelpDeskQuestionsProps>({
     resolver: zodResolver(HelpDeskQuestionsSchema),
-  })
-  const { toast } = useToast()
-
-  const [loading, setLoading] = useState<boolean>(false)
+  });
+  
+  const { toast } = useToast();
+  const [loading, setLoading] = useState<boolean>(false);
+  const [editingId, setEditingId] = useState<string | null>(null);
   const [isQuestions, setIsQuestions] = useState<
     { id: string; question: string; answer: string }[]
-  >([])
-  const onSubmitQuestion = handleSubmit(async (values) => {
-    setLoading(true)
-    const question = await onCreateHelpDeskQuestion(
-      id,
-      values.question,
-      values.answer
-    )
-    if (question) {
-      setIsQuestions(question.questions!)
-      toast({
-        title: question.status == 200 ? 'Success' : 'Error',
-        description: question.message,
-      })
-      setLoading(false)
-      reset()
-    }
-  })
+  >([]);
 
-  const onGetQuestions = async () => {
-    setLoading(true)
-    const questions = await onGetAllHelpDeskQuestions(id)
-    if (questions) {
-      setIsQuestions(questions.questions)
-      setLoading(false)
+  // Handle both create and update
+  const onSubmitQuestion = handleSubmit(async (values) => {
+    setLoading(true);
+    if (editingId) {
+      // Update existing question
+      const result = await onUpdateHelpDeskQuestion(
+        editingId,
+        values.question,
+        values.answer
+      );
+      if (result && result.question) {
+        setIsQuestions(isQuestions.map(q => 
+          q.id === editingId ? result.question! : q
+        ));
+        toast({
+          title: result.status === 200 ? 'Success' : 'Error',
+          description: result.message,
+        });
+        setEditingId(null);
+      }
+    } else {
+      // Create new question
+      const question = await onCreateHelpDeskQuestion(
+        id,
+        values.question,
+        values.answer
+      );
+      if (question && question.questions) {
+        setIsQuestions([...isQuestions, ...question.questions]);
+        toast({
+          title: question.status === 200 ? 'Success' : 'Error',
+          description: question.message,
+        });
+      }
     }
-  }
+    reset();
+    setLoading(false);
+  });
+
+  // Prepare form for editing
+  const onEditQuestion = (questionId: string) => {
+    const question = isQuestions.find(q => q.id === questionId);
+    if (question) {
+      setValue('question', question.question);
+      setValue('answer', question.answer);
+      setEditingId(questionId);
+    }
+  };
+
+  // Cancel editing mode
+  const onCancelEdit = () => {
+    setEditingId(null);
+    reset();
+  };
+
+  // Fetch all questions
+  const onGetQuestions = async () => {
+    setLoading(true);
+    const questions = await onGetAllHelpDeskQuestions(id);
+    if (questions && questions.questions) {
+      setIsQuestions(questions.questions);
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
-    onGetQuestions()
-  }, [])
+    onGetQuestions();
+  }, []);
 
   return {
     register,
@@ -146,8 +187,12 @@ export const useHelpDesk = (id: string) => {
     errors,
     isQuestions,
     loading,
-  }
-}
+    editingId,
+    onEditQuestion,
+    onCancelEdit,
+    setValue,
+  };
+};
 
 export const useFilterQuestions = (id: string) => {
   const {

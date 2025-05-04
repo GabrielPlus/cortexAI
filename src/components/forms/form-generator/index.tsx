@@ -11,6 +11,9 @@ type Props = {
   inputType: 'select' | 'input' | 'textarea'
   options?: { value: string; label: string; id: string }[]
   label?: string
+  className?: string;
+  value?: string
+  onChange?: (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => void;
   placeholder: string
   register: UseFormRegister<any>
   name: string

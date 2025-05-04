@@ -382,6 +382,49 @@ export const onCreateHelpDeskQuestion = async (
   }
 }
 
+
+export const onUpdateHelpDeskQuestion = async (
+  id: string,          // ID of the helpdesk question to update (not domainId)
+  question: string,     // Updated question text
+  answer: string        // Updated answer text
+) => {
+  try {
+    const updatedQuestion = await client.helpDesk.update({
+      where: {
+        id, // This is the HelpDesk record's ID, not Domain ID
+      },
+      data: {
+        question,
+        answer,
+      },
+      select: {
+        id: true,
+        question: true,
+        answer: true,
+      },
+    });
+
+    if (updatedQuestion) {
+      return {
+        status: 200,
+        message: 'Help desk question updated successfully',
+        question: updatedQuestion,
+      };
+    }
+
+    return {
+      status: 404,
+      message: 'Help desk question not found',
+    };
+  } catch (error) {
+    console.error(error);
+    return {
+      status: 500,
+      message: 'An error occurred while updating the question',
+    };
+  }
+};
+
 export const onGetAllHelpDeskQuestions = async (id: string) => {
   try {
     const questions = await client.helpDesk.findMany({
