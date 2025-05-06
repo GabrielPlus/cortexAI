@@ -448,6 +448,63 @@ export const onGetAllHelpDeskQuestions = async (id: string) => {
   }
 }
 
+
+export const onDeleteHelpDeskQuestion = async (id: string) => {
+  try {
+    // First verify that the question exists and belongs to the user's domain
+    const user = await currentUser();
+    if (!user) return { status: 401, message: 'Unauthorized' };
+
+    // Check if the question belongs to one of the user's domains
+    const userDomainWithQuestion = await client.user.findFirst({
+      where: {
+        clerkId: user.id,
+        domains: {
+          some: {
+            helpdesk: {
+              some: {
+                id: id,
+              },
+            },
+          },
+        },
+      },
+    });
+
+    if (!userDomainWithQuestion) {
+      return {
+        status: 404,
+        message: 'Question not found or you dont have permission to delete it',
+      };
+    }
+
+    // Delete the question (which will cascade to delete the answer as they're in the same record)
+    const deletedQuestion = await client.helpDesk.delete({
+      where: {
+        id: id,
+      },
+    });
+
+    if (deletedQuestion) {
+      return {
+        status: 200,
+        message: 'Question and answer deleted successfully',
+      };
+    }
+
+    return {
+      status: 400,
+      message: 'Failed to delete question',
+    };
+  } catch (error) {
+    console.log(error);
+    return {
+      status: 500,
+      message: 'An error occurred while deleting the question',
+    };
+  }
+};
+
 export const onCreateFilterQuestions = async (id: string, question: string) => {
   try {
     const filterQuestion = await client.domain.update({

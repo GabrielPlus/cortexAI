@@ -13,6 +13,7 @@ import { Button } from '@/components/ui/button'
 import { Loader } from '@/components/loader'
 import Accordion from '@/components/accordian'
 import { Separator } from '@/components/ui/separator'
+import { useToast } from '@/components/ui/use-toast'
 
 type Props = {
   id: string
@@ -23,13 +24,15 @@ const HelpDesk = ({ id }: Props) => {
     register,
     errors,
     onSubmitQuestion,
+    onDeleteQuestion,
     onEditQuestion,
     isQuestions,
     loading,
+    deletingId,
     onCancelEdit,
     setValue
   } = useHelpDesk(id)
-
+  const { toast } = useToast()
   const [editingQuestionId, setEditingQuestionId] = useState<string | null>(null)
 
   const handleEditClick = (questionId: string) => {
@@ -40,6 +43,22 @@ const HelpDesk = ({ id }: Props) => {
   const handleCancelEdit = () => {
     setEditingQuestionId(null)
     onCancelEdit()
+  }
+
+  const handleDelete = async (questionId: string) => {
+    try {
+      await onDeleteQuestion(questionId)
+      toast({
+        title: 'Success',
+        description: 'Question deleted successfully',
+      })
+    } catch (error) {
+      toast({
+        title: 'Error',
+        description: 'Failed to delete question',
+        variant: 'destructive',
+      })
+    }
   }
 
   return (
@@ -82,9 +101,19 @@ const HelpDesk = ({ id }: Props) => {
             <Button
               type="submit"
               className="bg-orange hover:bg-orange hover:opacity-70 transition duration-150 ease-in-out text-white font-semibold"
+              onClick={onSubmitQuestion}
             >
-              Create
+            Create
             </Button>
+            {editingQuestionId && (
+              <Button
+                type="button"
+                variant="outline"
+                onClick={handleCancelEdit}
+              >
+                Cancel
+              </Button>
+            )}
           </div>
         </form>
       </CardContent>
@@ -148,14 +177,23 @@ const HelpDesk = ({ id }: Props) => {
                         trigger={question.question}
                         content={question.answer}
                       />
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        className="mt-2"
-                        onClick={() => handleEditClick(question.id)}
-                      >
-                        Edit
-                      </Button>
+                      <div className="flex gap-2 mt-2">
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => handleEditClick(question.id)}
+                        >
+                          Edit
+                        </Button>
+                        <Button
+                          variant="destructive"
+                          size="sm"
+                          onClick={() => handleDelete(question.id)}
+                          disabled={deletingId === question.id}
+                        >
+                          {deletingId === question.id ? 'Deleting...' : 'Delete'}
+                        </Button>
+                      </div>
                     </>
                   )}
                   <Separator className="my-4" />

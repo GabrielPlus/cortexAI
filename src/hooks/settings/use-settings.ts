@@ -1,4 +1,4 @@
-import { onChatBotImageUpdate, onCreateFilterQuestions, onUpdateHelpDeskQuestion, onCreateHelpDeskQuestion, onDeleteUserDomain, onGetAllFilterQuestions, onGetAllHelpDeskQuestions, onUpdateDomain, onUpdateWelcomeMessage } from '@/actions/settings'
+import { onChatBotImageUpdate, onDeleteHelpDeskQuestion, onCreateFilterQuestions, onUpdateHelpDeskQuestion, onCreateHelpDeskQuestion, onDeleteUserDomain, onGetAllFilterQuestions, onGetAllHelpDeskQuestions, onUpdateDomain, onUpdateWelcomeMessage } from '@/actions/settings'
 import { useToast } from '@/components/ui/use-toast'
 import { DomainSettingsProps, DomainSettingsSchema, FilterQuestionsProps, FilterQuestionsSchema, HelpDeskQuestionsProps, HelpDeskQuestionsSchema } from '@/schemas/settings.schema'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -107,6 +107,7 @@ export const useHelpDesk = (id: string) => {
   
   const { toast } = useToast();
   const [loading, setLoading] = useState<boolean>(false);
+  const [deletingId, setDeletingId] = useState<string | null>(null);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [isQuestions, setIsQuestions] = useState<
     { id: string; question: string; answer: string }[]
@@ -151,6 +152,37 @@ export const useHelpDesk = (id: string) => {
     setLoading(false);
   });
 
+  // Delete a question
+  const onDeleteQuestion = async (questionId: string) => {
+    setDeletingId(questionId);
+    try {
+      const result = await onDeleteHelpDeskQuestion(questionId);
+      if (result) {
+        if (result.status === 200) {
+          setIsQuestions(isQuestions.filter(q => q.id !== questionId));
+          toast({
+            title: 'Success',
+            description: result.message,
+          });
+        } else {
+          toast({
+            title: 'Error',
+            description: result.message,
+            variant: 'destructive',
+          });
+        }
+      }
+    } catch (error) {
+      toast({
+        title: 'Error',
+        description: 'Failed to delete question',
+        variant: 'destructive',
+      });
+    } finally {
+      setDeletingId(null);
+    }
+  };
+
   // Prepare form for editing
   const onEditQuestion = (questionId: string) => {
     const question = isQuestions.find(q => q.id === questionId);
@@ -187,9 +219,11 @@ export const useHelpDesk = (id: string) => {
     errors,
     isQuestions,
     loading,
+    deletingId,
     editingId,
     onEditQuestion,
     onCancelEdit,
+    onDeleteQuestion,
     setValue,
   };
 };
