@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 import { ClerkProvider } from '@clerk/nextjs'
 import { Plus_Jakarta_Sans } from 'next/font/google'
+import NextTopLoader from 'nextjs-toploader';
 import './globals.css'
 import { Toaster } from '@/components/ui/toaster'
 import { ThemeProvider } from '@/context/theme-provider'
@@ -26,6 +27,14 @@ export default function RootLayout({
             defaultTheme="light"
             disableTransitionOnChange
           >
+            {/* Add TopLoader as the first element inside body */}
+            <NextTopLoader 
+              color="#3b82f6" // Default blue - change to match your theme
+              height={3}
+              showSpinner={false}
+              shadow="0 0 10px #3b82f6,0 0 5px #3b82f6"
+            />
+            
             {children}
             <Toaster />
           </ThemeProvider>

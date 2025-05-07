@@ -1,4 +1,5 @@
 import React from 'react'
+import { cn } from '@/lib/utils'
 
 type Props = {
   title: string
@@ -9,12 +10,19 @@ type Props = {
 
 const DashboardCard = ({ icon, title, value, sales }: Props) => {
   return (
-    <div className="rounded-lg flex flex-col gap-3 pr-10 pl-10 py-10 md:pl-10 md:pr-20 border-[1px] border-border bg-cream">
-      <div className="flex gap-3">
-        {icon}
-        <h2 className="font-bold text-xl">{title}</h2>
+    <div className={cn(
+      "rounded-lg flex flex-col gap-3 p-6 md:p-8 border bg-card text-card-foreground",
+      "transition-colors duration-200" // Smooth theme transition
+    )}>
+      <div className="flex items-center gap-3">
+        <div className="text-muted-foreground">
+          {React.cloneElement(icon, { className: "w-5 h-5" })}
+        </div>
+        <h2 className="font-bold text-lg text-muted-foreground">
+          {title}
+        </h2>
       </div>
-      <p className="font-bold text-4xl">
+      <p className="font-bold text-3xl md:text-4xl">
         {sales && '$'}
         {value}
       </p>

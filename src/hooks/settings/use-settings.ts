@@ -113,61 +113,52 @@ export const useHelpDesk = (id: string) => {
     { id: string; question: string; answer: string }[]
   >([]);
 
-  // Handle both create and update
   const onSubmitQuestion = handleSubmit(async (values) => {
     setLoading(true);
-    if (editingId) {
-      // Update existing question
-      const result = await onUpdateHelpDeskQuestion(
-        editingId,
-        values.question,
-        values.answer
-      );
-      if (result && result.question) {
-        setIsQuestions(isQuestions.map(q => 
-          q.id === editingId ? result.question! : q
-        ));
-        toast({
-          title: result.status === 200 ? 'Success' : 'Error',
-          description: result.message,
-        });
-        setEditingId(null);
-      }
-    } else {
-      // Create new question
-      const question = await onCreateHelpDeskQuestion(
-        id,
-        values.question,
-        values.answer
-      );
-      if (question && question.questions) {
-        setIsQuestions([...isQuestions, ...question.questions]);
-        toast({
-          title: question.status === 200 ? 'Success' : 'Error',
-          description: question.message,
-        });
-      }
-    }
-    reset();
-    setLoading(false);
-  });
-
-  // Delete a question
-  const onDeleteQuestion = async (questionId: string) => {
-    setDeletingId(questionId);
     try {
-      const result = await onDeleteHelpDeskQuestion(questionId);
-      if (result) {
-        if (result.status === 200) {
-          setIsQuestions(isQuestions.filter(q => q.id !== questionId));
+      if (editingId) {
+        // Update existing question
+        const result = await onUpdateHelpDeskQuestion(
+          editingId,
+          values.question,
+          values.answer
+        );
+        
+        if (result?.status === 200) {
+          setIsQuestions(isQuestions.map(q => 
+            q.id === editingId ? { ...q, question: values.question, answer: values.answer } : q
+          ));
           toast({
             title: 'Success',
             description: result.message,
           });
+          setEditingId(null);
+          reset();
         } else {
           toast({
             title: 'Error',
-            description: result.message,
+            description: result?.message || 'Failed to update question',
+            variant: 'destructive',
+          });
+        }
+      } else {
+        // Create new question
+        const question = await onCreateHelpDeskQuestion(
+          id,
+          values.question,
+          values.answer
+        );
+        if (question?.status === 200) {
+          setIsQuestions([...isQuestions, ...question.questions!]);
+          toast({
+            title: 'Success',
+            description: question.message,
+          });
+          reset();
+        } else {
+          toast({
+            title: 'Error',
+            description: question?.message || 'Failed to create question',
             variant: 'destructive',
           });
         }
@@ -175,7 +166,36 @@ export const useHelpDesk = (id: string) => {
     } catch (error) {
       toast({
         title: 'Error',
-        description: 'Failed to delete question',
+        description: 'An unexpected error occurred',
+        variant: 'destructive',
+      });
+    } finally {
+      setLoading(false);
+    }
+  });
+
+  // Delete a question
+  const onDeleteQuestion = async (questionId: string) => {
+    setDeletingId(questionId);
+    try {
+      const result = await onDeleteHelpDeskQuestion(questionId);
+      if (result?.status === 200) {
+        setIsQuestions(isQuestions.filter(q => q.id !== questionId));
+        toast({
+          title: 'Success',
+          description: result.message,
+        });
+      } else {
+        toast({
+          title: 'Error',
+          description: result?.message || 'Failed to delete question',
+          variant: 'destructive',
+        });
+      }
+    } catch (error) {
+      toast({
+        title: 'Error',
+        description: 'An unexpected error occurred',
         variant: 'destructive',
       });
     } finally {

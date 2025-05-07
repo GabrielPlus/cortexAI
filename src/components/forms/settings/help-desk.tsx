@@ -30,19 +30,13 @@ const HelpDesk = ({ id }: Props) => {
     loading,
     deletingId,
     onCancelEdit,
-    setValue
+    setValue,
+    editingId
   } = useHelpDesk(id)
   const { toast } = useToast()
-  const [editingQuestionId, setEditingQuestionId] = useState<string | null>(null)
 
   const handleEditClick = (questionId: string) => {
-    setEditingQuestionId(questionId)
     onEditQuestion(questionId)
-  }
-
-  const handleCancelEdit = () => {
-    setEditingQuestionId(null)
-    onCancelEdit()
   }
 
   const handleDelete = async (questionId: string) => {
@@ -101,15 +95,14 @@ const HelpDesk = ({ id }: Props) => {
             <Button
               type="submit"
               className="bg-orange hover:bg-orange hover:opacity-70 transition duration-150 ease-in-out text-white font-semibold"
-              onClick={onSubmitQuestion}
             >
-            Create
+              {editingId ? 'Update' : 'Create'}
             </Button>
-            {editingQuestionId && (
+            {editingId && (
               <Button
                 type="button"
                 variant="outline"
-                onClick={handleCancelEdit}
+                onClick={onCancelEdit}
               >
                 Cancel
               </Button>
@@ -123,13 +116,13 @@ const HelpDesk = ({ id }: Props) => {
             <div className="space-y-4 pr-2">
               {isQuestions.map((question) => (
                 <div key={question.id} className="mb-4">
-                  {editingQuestionId === question.id ? (
-                    <div className="p-4 border rounded-lg">
+                  {editingId === question.id ? (
+                    <form onSubmit={onSubmitQuestion} className="p-4 border rounded-lg">
                       <FormGenerator
                         inputType="textarea"
                         type="text"
                         placeholder="Enter your question"
-                        value={question.question}
+                        defaultValue={question.question}
                         onChange={(e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) =>
                           setValue('question', e.target.value)
                         }
@@ -144,7 +137,7 @@ const HelpDesk = ({ id }: Props) => {
                           inputType="textarea"
                           type="text"
                           placeholder="Enter your answer"
-                          value={question.answer}
+                          defaultValue={question.answer}
                           onChange={(e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) =>
                             setValue('answer', e.target.value)
                           }
@@ -157,20 +150,21 @@ const HelpDesk = ({ id }: Props) => {
                       </div>
                       <div className="flex gap-2 mt-3">
                         <Button
+                          type="submit"
                           size="sm"
-                          onClick={() => onSubmitQuestion()}
                         >
                           Save
                         </Button>
                         <Button
                           variant="outline"
                           size="sm"
-                          onClick={handleCancelEdit}
+                          type="button"
+                          onClick={onCancelEdit}
                         >
                           Cancel
                         </Button>
                       </div>
-                    </div>
+                    </form>
                   ) : (
                     <>
                       <Accordion

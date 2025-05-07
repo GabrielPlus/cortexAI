@@ -1,33 +1,36 @@
-import React from 'react'
-import BreadCrumb from './bread-crump'
-import { Card } from '../ui/card'
-import { Headphones, Star, Trash } from 'lucide-react'
-import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar'
+'use client';
+import React from 'react';
+import BreadCrumb from './bread-crump';
+import { Moon, Sun } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { useThemeMode } from '@/hooks/settings/use-settings';
 
-type Props = {}
+const InfoBar = () => {
+  const { setTheme, theme } = useThemeMode();
 
-const InfoBar = (props: Props) => {
+  const toggleTheme = () => {
+    setTheme(theme === 'dark' ? 'light' : 'dark');
+  };
+
   return (
     <div className="flex w-full justify-between items-center py-1 mb-8">
       <BreadCrumb />
-      <div className="flex gap-3 items-center mb-8">
-        <div>
-        </div>
-        <Avatar>
-          <AvatarFallback className="bg-orange text-white">
-            <Headphones />
-          </AvatarFallback>
-        </Avatar>
-        <Avatar>
-          <AvatarImage
-            src="https://github.com/shadcn.png"
-            alt="@shadcn"
-          />
-          <AvatarFallback>CN</AvatarFallback>
-        </Avatar>
+      <div className="flex gap-3 items-center mb-13">
+        <Button 
+          variant="outline" 
+          size="icon"
+          onClick={toggleTheme}
+          aria-label="Toggle theme"
+        >
+          {theme === 'dark' ? (
+            <Sun className="h-[1.2rem] w-[1.2rem] rotate-0 scale-100 transition-all" />
+          ) : (
+            <Moon className="h-[1.2rem] w-[1.2rem] rotate-0 scale-100 transition-all" />
+          )}
+        </Button>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default InfoBar
+export default InfoBar;
