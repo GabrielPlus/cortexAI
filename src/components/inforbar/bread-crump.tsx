@@ -43,7 +43,13 @@ const BreadCrumb = (props: Props) => {
           ? 'View and edit all your  appointments'
           : page == 'email-marketing'
           ? 'Send bulk emails to your users'
-          : page == 'integration'
+          : page == 'employees'
+          ? 'Manage employees'
+          : page == 'attendance'
+          ? 'Mark Attendance'
+          : page == 'attendance-dashboard'
+          ? 'Metrics'
+          : page == 'attendance'
           ? 'Connect your Website into Cortex-AI'
           : 'modify domain settings, customize chatbot options, input hepdesk queries, and train your bot to assist with questions, skills mapping, and career recommendations'}
       </p>

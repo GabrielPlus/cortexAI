@@ -33,67 +33,21 @@ export default async function Home() {
       <NavBar />
       <section>
         <div className="flex items-center justify-center flex-col mt-[80px] gap-4 ">
-          <span className="text-orange bg-orange/20 px-4 py-2 rounded-full text-sm">
-            An AI powered assistant chatbot
+          <span className="text-indigo-900 bg-indigo-300 px-4 py-2 rounded-full text-sm">
+            Techkidz Africa Space Hub
           </span>
           <p className="text-center max-w-[500px]">
-            Your AI powered assistant! Embed Cortex AI into any website
-            with just a snippet of code!
+ Access AI bot, track your attendance, and stay up to date with the latest from the TKA Newsroom — everything we need, all in one place.
           </p>
-          <Button className="bg-orange font-bold text-white px-4">
-            Start For Free
+      <Link
+        href="/dashboard"
+        className=" px-4 py-2 rounded-sm text-white"
+      ><Button className=" font-bold text-white px-4">
+          Sign In
           </Button>
+      </Link>
         </div>
       </section>
-      <section className="flex justify-center items-center flex-col gap-4 mt-10">
-        <h2 className="text-4xl text-center"> Choose what fits you right</h2>
-        <p className="text-muted-foreground text-center max-w-lg">
-          Our straightforward pricing plans are tailored to meet your needs. If
-          {" you're"} not ready to commit you can get started for free.
-        </p>
-      </section>
-      <div className="flex  justify-center gap-4 flex-wrap mt-6">
-        {pricingCards.map((card) => (
-          <Card
-            key={card.title}
-            className={clsx('w-[300px] flex flex-col justify-between', {
-              'border-2 border-primary': card.title === 'Unlimited',
-            })}
-          >
-            <CardHeader>
-              <CardTitle className="text-orange">{card.title}</CardTitle>
-              <CardDescription>
-                {pricingCards.find((c) => c.title === card.title)?.description}
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <span className="text-4xl font-bold">{card.price}</span>
-              <span className="text-muted-foreground">
-                <span>/ month</span>
-              </span>
-            </CardContent>
-            <CardFooter className="flex flex-col items-start gap-4">
-              <div>
-                {card.features.map((feature) => (
-                  <div
-                    key={feature}
-                    className="flex gap-2"
-                  >
-                    <Check />
-                    <p>{feature}</p>
-                  </div>
-                ))}
-              </div>
-              <Link
-                href={`/dashbord?plan=${card.title}`}
-                className="bg-[#f3d299] border-orange border-2 p-2 w-full text-center font-bold rounded-md"
-              >
-                Get Started
-              </Link>
-            </CardFooter>
-          </Card>
-        ))}
-      </div>
 
       <section className="flex justify-center items-center flex-col gap-4 mt-28">
         <h2 className="text-4xl text-center">News Room</h2>

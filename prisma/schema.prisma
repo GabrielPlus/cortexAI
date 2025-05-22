@@ -27,6 +27,8 @@ model User {
 
   campaign Campaign[]
 
+  employee  Employee[]
+
   subscription Billings?
 }
 
@@ -39,13 +41,14 @@ model Domain {
   helpdesk        HelpDesk[]
   filterQuestions FilterQuestions[]
   products        Product[]
-   chatSession      ChatSession[] 
+  chatSession     ChatSession[] 
 
   customer   Customer[]
   User       User?      @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId     String?    @db.Uuid
   Campaign   Campaign?  @relation(fields: [campaignId], references: [id])
   campaignId String?    @db.Uuid
+
 }
 
 model ChatBot {
@@ -155,7 +158,6 @@ model ChatSession {
   @@index([domainId])
 }
 
-
 model Campaign {
   id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   name      String
@@ -177,6 +179,88 @@ model Product {
   domainId  String?  @db.Uuid
 }
 
+// NEW EMPLOYEE ATTENDANCE MODELS
+
+model Department {
+  id        String     @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name      String     // e.g., "ATTACHEE", "INTERN"
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+
+  employees Employee[]
+}
+
+
+model Employee {
+  id          String     @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name        String
+  workId      String     @unique
+  email       String?
+  phone       String?
+  isActive    Boolean    @default(true)
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+
+  // Optional relation to User (Clerk ID)
+  userId      String?    @db.Uuid
+  user        User?      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  department   Department? @relation(fields: [departmentId], references: [id])
+  departmentId String?     @db.Uuid
+
+  attendanceRecords AttendanceRecord[]
+
+  @@index([workId])
+}
+
+
+model AttendanceRecord {
+  id                String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  date              DateTime @db.Date
+  day               Int
+  month             Int
+  year              Int
+
+  // Check-in data
+  checkInTime       DateTime?
+  checkInLocation   String?
+  checkInLat        Float?
+  checkInLng        Float?
+
+  // Check-out data
+  checkOutTime      DateTime?
+  checkOutLocation  String?
+  checkOutLat       Float?
+  checkOutLng       Float?
+
+  status            AttendanceStatus @default(ABSENT)
+  notes             String?
+  createdAt         DateTime         @default(now())
+  updatedAt         DateTime         @updatedAt
+
+  employee   Employee @relation(fields: [employeeId], references: [id], onDelete: Cascade)
+  employeeId String   @db.Uuid
+
+  @@unique([employeeId, date])
+  @@index([employeeId, date])
+  @@index([date])
+}
+
+model AttendanceSettings {
+  id                    String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  workingHoursStart     String   @default("09:00") // Format: "HH:MM"
+  workingHoursEnd       String   @default("17:00") // Format: "HH:MM"
+  allowedCheckInWindow  Int      @default(30)
+  allowedCheckOutWindow Int      @default(30)
+  requireLocation       Boolean  @default(true)
+  maxLocationRadius     Float    @default(100.0)
+  officeLatitude        Float?
+  officeLongitude       Float?
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+}
+
+
 enum Plans {
   STANDARD
   ULTIMATE
@@ -186,3 +270,212 @@ enum Role {
   user
   assistant
 }
+
+
+enum AttendanceStatus {
+  PRESENT
+  ABSENT
+  SESSION
+  LATE
+  HALF_DAY
+  LEAVE
+}
+
+
+
+
+
+
+
+
+
+
+
+// // This is your Prisma schema file,
+// // learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// // Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// // Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+// generator client {
+//   provider = "prisma-client-js"
+// }
+
+// datasource db {
+//   provider = "postgresql"
+//   url      = env("DATABASE_URL")
+// }
+
+// model User {
+//   id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+//   fullname  String
+//   clerkId   String   @unique
+//   type      String
+//   createdAt DateTime @default(now())
+//   updatedAt DateTime @updatedAt
+
+//   stripeId String?
+
+//   domains Domain[]
+
+//   campaign Campaign[]
+
+//   subscription Billings?
+// }
+
+// model Domain {
+//   id   String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+//   name String
+//   icon String
+
+//   chatBot         ChatBot?
+//   helpdesk        HelpDesk[]
+//   filterQuestions FilterQuestions[]
+//   products        Product[]
+//    chatSession      ChatSession[] 
+
+//   customer   Customer[]
+//   User       User?      @relation(fields: [userId], references: [id], onDelete: Cascade)
+//   userId     String?    @db.Uuid
+//   Campaign   Campaign?  @relation(fields: [campaignId], references: [id])
+//   campaignId String?    @db.Uuid
+// }
+
+// model ChatBot {
+//   id             String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+//   welcomeMessage String?
+//   icon           String?
+//   background     String?
+//   textColor      String?
+//   helpdesk       Boolean @default(false)
+//   Domain         Domain? @relation(fields: [domainId], references: [id], onDelete: Cascade)
+//   domainId       String? @unique @db.Uuid
+// }
+
+// model Billings {
+//   id      String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+//   plan    Plans   @default(STANDARD)
+//   credits Int     @default(10)
+//   User    User?   @relation(fields: [userId], references: [id], onDelete: Cascade)
+//   userId  String? @unique @db.Uuid
+// }
+
+// model HelpDesk {
+//   id       String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+//   question String
+//   answer   String
+
+//   Domain   Domain? @relation(fields: [domainId], references: [id], onDelete: Cascade)
+//   domainId String? @db.Uuid
+// }
+
+// model FilterQuestions {
+//   id       String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+//   question String
+//   answered String?
+
+//   Domain   Domain? @relation(fields: [domainId], references: [id], onDelete: Cascade)
+//   domainId String? @db.Uuid
+// }
+
+// model CustomerResponses {
+//   id         String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+//   question   String
+//   answered   String?
+//   customer   Customer @relation(fields: [customerId], references: [id], onDelete: Cascade)
+//   customerId String   @db.Uuid
+// }
+
+// model Customer {
+//   id    String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+//   email String? 
+
+//   questions CustomerResponses[]
+
+//   chatRoom ChatRoom[]
+
+//   booking Bookings[]
+
+//   Domain   Domain? @relation(fields: [domainId], references: [id], onDelete: Cascade)
+//   domainId String? @db.Uuid
+//   chatSession      ChatSession[] 
+// }
+
+// model ChatRoom {
+//   id         String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+//   live       Boolean   @default(false)
+//   mailed     Boolean   @default(false)
+//   createdAt  DateTime  @default(now())
+//   updatedAt  DateTime  @updatedAt
+//   Customer   Customer? @relation(fields: [customerId], references: [id], onDelete: Cascade)
+//   customerId String?   @db.Uuid
+
+//   message ChatMessage[]
+// }
+
+// model ChatMessage {
+//   id         String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+//   message    String
+//   role       Role?
+//   createdAt  DateTime  @default(now())
+//   updatedAt  DateTime  @updatedAt
+//   ChatRoom   ChatRoom? @relation(fields: [chatRoomId], references: [id], onDelete: Cascade)
+//   chatRoomId String?   @db.Uuid
+//   seen       Boolean   @default(false)
+// }
+
+// model Bookings {
+//   id         String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+//   date       DateTime
+//   slot       String
+//   email      String
+//   Customer   Customer? @relation(fields: [customerId], references: [id], onDelete: Cascade)
+//   customerId String?   @db.Uuid
+//   domainId   String?   @db.Uuid
+//   createdAt  DateTime  @default(now())
+// }
+
+// model ChatSession {
+//   id           String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+//   customerEmail String?
+//   domain       Domain?  @relation(fields: [domainId], references: [id], onDelete: Cascade)
+//   domainId     String?  @db.Uuid
+//   createdAt    DateTime @default(now())
+//   updatedAt    DateTime @updatedAt
+//   customer     Customer? @relation(fields: [customerId], references: [id], onDelete: Cascade)
+//   customerId   String?  @db.Uuid
+
+//   @@index([domainId])
+// }
+
+
+// model Campaign {
+//   id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+//   name      String
+//   customers String[]
+//   domain    Domain[]
+//   template  String?
+//   User      User?    @relation(fields: [userId], references: [id], onDelete: Cascade)
+//   userId    String?  @db.Uuid
+//   createdAt DateTime @default(now())
+// }
+
+// model Product {
+//   id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+//   name      String
+//   price     Int
+//   image     String
+//   createdAt DateTime @default(now())
+//   Domain    Domain?  @relation(fields: [domainId], references: [id], onDelete: Cascade)
+//   domainId  String?  @db.Uuid
+// }
+
+// enum Plans {
+//   STANDARD
+//   ULTIMATE
+// }
+
+// enum Role {
+//   user
+//   assistant
+// }

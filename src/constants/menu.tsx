@@ -4,9 +4,11 @@ import DashboardIcon from '@/icons/dashboard-icon'
 import EmailIcon from '@/icons/email-icon'
 import HelpDeskIcon from '@/icons/help-desk-icon'
 import IntegrationsIcon from '@/icons/integrations-icon'
+import PersonIcon from '@/icons/person-icon'
 import SettingsIcon from '@/icons/settings-icon'
 import StarIcon from '@/icons/star-icon'
 import TimerIcon from '@/icons/timer-icon'
+import { HandCoins, HandIcon, LayoutDashboardIcon } from 'lucide-react'
 
 type SIDE_BAR_MENU_PROPS = {
   label: string
@@ -16,9 +18,14 @@ type SIDE_BAR_MENU_PROPS = {
 
 export const SIDE_BAR_MENU: SIDE_BAR_MENU_PROPS[] = [
   {
-    label: 'Dashboard',
+    label: 'Bot Metrics',
     icon: <DashboardIcon />,
     path: 'dashboard',
+  },
+  {
+    label: 'Attendance Metrics',
+    icon: <LayoutDashboardIcon />,
+    path: 'attendance-dashboard',
   },
   {
     label: 'Conversations',
@@ -29,6 +36,16 @@ export const SIDE_BAR_MENU: SIDE_BAR_MENU_PROPS[] = [
     label: 'Settings',
     icon: <SettingsIcon />,
     path: 'settings',
+  },
+    {
+    label: 'Employees',
+    icon: <PersonIcon/>,
+    path: 'employees',
+  },
+    {
+    label: 'Attendance',
+    icon: <HandIcon />,
+    path: 'attendance',
   },
   {
     label: 'Appointments',

@@ -1,11 +1,10 @@
 'use client';
 import React, { useEffect, useState } from 'react';
-import BreadCrumb from './bread-crump';
 import { Moon, Sun } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useThemeMode } from '@/hooks/settings/use-settings';
 
-const InfoBar = () => {
+const EmployeeBar = () => {
   const [mounted, setMounted] = useState(false);
   const { setTheme, theme } = useThemeMode();
 
@@ -21,7 +20,6 @@ const InfoBar = () => {
     // Render a placeholder during SSR that matches the button's dimensions
     return (
       <div className="flex w-full justify-between items-center py-1 mb-8">
-        <BreadCrumb />
         <div className="flex gap-3 items-center mb-13">
           <Button 
             variant="outline" 
@@ -38,7 +36,6 @@ const InfoBar = () => {
 
   return (
     <div className="flex w-full justify-between items-center py-1 mb-8">
-      <BreadCrumb />
       <div className="flex gap-3 items-center mb-13">
         <Button 
           variant="outline" 
@@ -57,4 +54,4 @@ const InfoBar = () => {
   );
 };
 
-export default InfoBar;
+export default EmployeeBar;
