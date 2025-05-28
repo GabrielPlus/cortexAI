@@ -28,13 +28,27 @@ export const AddDomainSchema = z.object({
       'This is not a valid domain'
     ),
   image: z
-    .any()
-    .refine((files) => files?.[0]?.size <= MAX_UPLOAD_SIZE, {
-      message: 'Your file size must be less then 2MB',
-    })
-    .refine((files) => ACCEPTED_FILE_TYPES.includes(files?.[0]?.type), {
+  .any()
+  .optional()
+  .refine(
+    (files) => {
+      if (!files || files.length === 0) return true;
+      return files[0].size <= MAX_UPLOAD_SIZE;
+    },
+    {
+      message: 'Your file size must be less than 2MB',
+    }
+  )
+  .refine(
+    (files) => {
+      if (!files || files.length === 0) return true;
+      return ACCEPTED_FILE_TYPES.includes(files[0].type);
+    },
+    {
       message: 'Only JPG, JPEG & PNG are accepted file formats',
-    }),
+    }
+  ),
+
 })
 
 

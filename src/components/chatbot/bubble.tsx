@@ -1,9 +1,11 @@
 import React from 'react'
 import { cn, extractUUIDFromString, getMonthName } from '@/lib/utils'
-import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar'
+import { Avatar, AvatarFallback } from '../ui/avatar'
 import { User } from 'lucide-react'
 import Image from 'next/image'
 import Link from 'next/link'
+import ReactMarkdown from 'react-markdown'
+import remarkGfm from 'remark-gfm'
 
 type Props = {
   message: {
@@ -17,39 +19,31 @@ type Props = {
 const Bubble = ({ message, createdAt }: Props) => {
   let d = new Date()
   const image = extractUUIDFromString(message.content)
-  console.log(message.link)
 
   return (
     <div
       className={cn(
         'flex gap-2 items-end',
-        message.role == 'assistant' ? 'self-start' : 'self-end flex-row-reverse'
+        message.role === 'assistant' ? 'self-start' : 'self-end flex-row-reverse'
       )}
     >
-      {message.role == 'assistant' ? (
-        <Avatar className="w-5 h-5">
-          <AvatarFallback>T</AvatarFallback>
-        </Avatar>
-      ) : (
-        <Avatar className="w-5 h-5">
-          <AvatarFallback>
-            <User />
-          </AvatarFallback>
-        </Avatar>
-      )}
+      <Avatar className="w-5 h-5">
+        <AvatarFallback>
+          {message.role === 'assistant' ? 'T' : <User />}
+        </AvatarFallback>
+      </Avatar>
+
       <div
         className={cn(
           'flex flex-col gap-3 min-w-[200px] max-w-[300px] p-4 rounded-t-md',
-          message.role == 'assistant'
+          message.role === 'assistant'
             ? 'bg-muted rounded-r-md'
             : 'bg-purple-100 rounded-l-md'
         )}
       >
         {createdAt ? (
           <div className="flex gap-2 text-xs text-gray-600">
-            <p>
-              {createdAt.getDate()} {getMonthName(createdAt.getMonth())}
-            </p>
+            <p>{createdAt.getDate()} {getMonthName(createdAt.getMonth())}</p>
             <p>
               {createdAt.getHours()}:{createdAt.getMinutes()}
               {createdAt.getHours() > 12 ? 'PM' : 'AM'}
@@ -57,32 +51,25 @@ const Bubble = ({ message, createdAt }: Props) => {
           </div>
         ) : (
           <p className="text-xs">
-            {`${d.getHours()}:${d.getMinutes()} ${
-              d.getHours() > 12 ? 'pm' : 'am'
-            }`}
+            {`${d.getHours()}:${d.getMinutes()} ${d.getHours() > 12 ? 'pm' : 'am'}`}
           </p>
         )}
+
         {image ? (
           <div className="relative aspect-square">
-            <Image
-              src={`https://ucarecdn.com/${image[0]}/`}
-              fill
-              alt="image"
-            />
+            <Image src={`https://ucarecdn.com/${image[0]}/`} fill alt="image" />
           </div>
         ) : (
-          <p className="text-sm">
-            {message.content.replace('(complete)', ' ')}
+          <div className="text-sm prose prose-sm prose-a:text-blue-600 prose-blockquote:border-l-4 prose-blockquote:pl-3">
+            <ReactMarkdown remarkPlugins={[remarkGfm]}>
+              {message.content.replace('(complete)', '')}
+            </ReactMarkdown>
             {message.link && (
-              <Link
-                className="underline font-bold pl-2"
-                href={message.link}
-                target="_blank"
-              >
+              <Link className="underline font-bold pl-2" href={message.link} target="_blank">
                 Your Link
               </Link>
             )}
-          </p>
+          </div>
         )}
       </div>
     </div>
@@ -90,3 +77,4 @@ const Bubble = ({ message, createdAt }: Props) => {
 }
 
 export default Bubble
+

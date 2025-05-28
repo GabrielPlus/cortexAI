@@ -65,17 +65,18 @@ const AiChatBot = (props: Props) => {
   <div className="relative flex items-center cursor-pointer" onClick={onOpenChatBot}>
     
       {currentBot?.chatBot?.icon ? (
-        <Image
-          src={`https://ucarecdn.com/${currentBot.chatBot.icon}/`}
-          alt="bot"
-          width={50}
-          height={50}
-          className="rounded-full"
-          unoptimized
-        />
-      ) : (
-        <BotIcon />
-      )}
+  <Image
+    src={`https://ucarecdn.com/${currentBot.chatBot.icon}/`}
+    alt="bot"
+    width={50}
+    height={50}
+    className="rounded-full border border-gray-400"
+    unoptimized
+  />
+) : (
+  <BotIcon />
+)}
+
     
   </div>
 )}
